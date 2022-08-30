@@ -8,7 +8,7 @@ import superjson from 'superjson'
 import type { AppRouter } from '../server/router'
 import '../styles/globals.css'
 
-const MyApp: AppType = ({ Component, pageProps: { session, ...pageProps } }) => {
+const PromptBot: AppType = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <SessionProvider session={session}>
       <Component {...pageProps} />
@@ -50,4 +50,4 @@ export default withTRPC<AppRouter>({
    * @link https://trpc.io/docs/ssr
    */
   ssr: false,
-})(MyApp)
+})(PromptBot)
