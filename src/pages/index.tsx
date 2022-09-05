@@ -37,9 +37,10 @@ const Home: NextPage = () => {
   }, [isSubmitting, timer])
 
   // TODO: this really should be a websocket
-  const longPoll = async (jobId: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const longPoll: any = async (jobId: string) => {
     const resp = await axios.get(`/api/images/${jobId}`)
-    
+
     if (resp.data.status === 'pending') {
       return setTimeout(() => longPoll(jobId), 1000)
     }
