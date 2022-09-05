@@ -31,7 +31,7 @@ const NavBar: React.FC = () => {
               <Link href="/projects">
                 <div className="avatar">
                   <div className="w-10 rounded-full">
-                    <Image src={session.user.image as string} width={150} height={150} alt={session.user.name as string} />
+                    <Image src={session?.user?.image as string} width={150} height={150} alt={session?.user?.name as string} />
                   </div>
                 </div>
               </Link>
