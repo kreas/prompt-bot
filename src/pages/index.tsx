@@ -93,7 +93,7 @@ const Home: NextPage = () => {
                   </div>
 
                   <div className="mt-4">
-                    <Field name="steps" type="range" min="30" max="100" step="10" className="range" />
+                    <Field name="steps" type="range" min="20" max="50" step="1" className="range" />
                     <div className="flex">
                       <div className="flex-1">Steps</div>
                       <div className="w-full text-right">{props.values.steps}</div>
