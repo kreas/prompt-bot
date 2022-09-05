@@ -2,8 +2,10 @@
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
 import { loggerLink } from '@trpc/client/links/loggerLink'
 import { withTRPC } from '@trpc/next'
+import BaseLayout from 'components/layout/BaseLayout'
 import { SessionProvider } from 'next-auth/react'
 import type { AppType } from 'next/dist/shared/lib/utils'
+import React from 'react'
 import superjson from 'superjson'
 import type { AppRouter } from '../server/router'
 import '../styles/globals.css'
@@ -11,7 +13,9 @@ import '../styles/globals.css'
 const PromptBot: AppType = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <BaseLayout>
+        <Component {...pageProps} />
+      </BaseLayout>
     </SessionProvider>
   )
 }

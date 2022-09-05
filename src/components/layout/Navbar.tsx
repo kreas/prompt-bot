@@ -1,6 +1,12 @@
+import { signIn, useSession } from 'next-auth/react'
+import Link from 'next/link'
+import Image from 'next/image'
+
 const NavBar: React.FC = () => {
+  const { data: session } = useSession()
+
   return (
-    <div className="navbar bg-base-100 w-full">
+    <div className="navbar bg-base-300 w-full drop-shadow-sm mb-4">
       <div className="flex-none md:hidden">
         <button className="btn btn-square btn-ghost">
           <svg
@@ -14,13 +20,26 @@ const NavBar: React.FC = () => {
         </button>
       </div>
       <div className="flex-1">
-        <a className="btn btn-ghost normal-case text-xl">PROMPT BOT</a>
+        <Link href="/">
+          <a className="btn btn-ghost normal-case text-xl">scrollrack</a>
+        </Link>
       </div>
       <div className="flex-none hidden md:block">
         <ul>
           <li>
-            {}
-            <button className="btn btn-ghost normal-case">Launch</button>
+            {session ? (
+              <Link href="/projects">
+                <div className="avatar">
+                  <div className="w-10 rounded-full">
+                    <Image src={session.user.image as string} width={150} height={150} alt={session.user.name as string} />
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <button className="btn btn-ghost normal-case" onClick={() => signIn()}>
+                Sign In
+              </button>
+            )}
           </li>
         </ul>
       </div>
