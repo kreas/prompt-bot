@@ -74,7 +74,7 @@ const Home: NextPage = () => {
         >
           {(props) => (
             <Form className="flex flex-row flex-1 mr-2 px-4">
-              <section className="flex-1" style={{ maxWidth: 300 }}>
+              <section className="flex-1 hidden md:block" style={{ maxWidth: 300 }}>
                 <div className="form-control mt-2">
                   <div className="mt-4">
                     <Field name="width" type="range" min="512" max="768" step="64" className="range" />
