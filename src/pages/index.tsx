@@ -52,8 +52,9 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Prompt Bot</title>
-        <meta name="description" content="Prompt Bot" />
+        <title>Scrollrack</title>
+        <meta name="description" content="AI powered asset generator for Magic The Gathering" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
