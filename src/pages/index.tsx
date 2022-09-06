@@ -4,17 +4,41 @@ import { Formik, Field, Form } from 'formik'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { signIn, useSession } from 'next-auth/react'
+import Image from 'next/image'
 
 const Timer: React.FC<{ timer: number; show: boolean }> = ({ timer, show }) => {
   if (!show) return null
 
   return (
     <div
-      className="flex text-3xl justify-center h-full"
+      className="flex justify-center h-full"
       style={{ textShadow: '3px 2px 7px rgba(0,0,0,0.6)', alignItems: 'center' }}
     >
-      <span>{timer.toFixed(1)}s</span>
+      <div className="font-mono text-4xl">
+        <span>{timer.toFixed(1)}</span>
+      </div>
     </div>
+  )
+}
+
+type FormFieldProps = {
+  label: string
+  children: React.ReactNode
+  value: string | number | boolean
+  hint?: string
+  badge?: boolean
+}
+
+const FormField: React.FC<FormFieldProps> = ({ label, children, value, hint, badge = true }) => {
+  return (
+    <label className="mt-4">
+      <div className="flex">
+        <div className="flex-1">{label}</div>
+        {badge && <div className="badge badge-lg">{value}</div>}
+      </div>
+      {hint && <div className="text-sm opacity-60 mb-2">{hint}</div>}
+      {children}
+    </label>
   )
 }
 
@@ -62,11 +86,11 @@ const Home: NextPage = () => {
         <Formik
           initialValues={{ prompt: '', width: 512, height: 512, steps: 30, seed: 0 }}
           onSubmit={async (values: Record<string, string | number>) => {
+            if (!Boolean(values?.prompt)) return
             setIsSubmitting(true)
             try {
               const response = await axios.post('/api/generate', values)
               longPoll(response.data.job_id)
-              
             } catch (error) {
               console.error(error)
               setIsSubmitting(false)
@@ -77,46 +101,51 @@ const Home: NextPage = () => {
             <Form className="flex flex-row flex-1 mr-2 px-4">
               <section className="flex-1 hidden md:block" style={{ maxWidth: 300 }}>
                 <div className="form-control mt-2">
-                  <div className="mt-4">
-                    <Field name="width" type="range" min="512" max="768" step="64" className="range" />
-                    <div className="flex">
-                      <div className="flex-1">Width</div>
-                      <div className="w-full text-right">{props.values.width}px</div>
-                    </div>
-                  </div>
+                  <FormField label="Width" value={`${props.values.width}px`} hint="Width of your image.">
+                    <Field name="width" type="range" min="512" max="768" step="64" className="range range-sm" />
+                  </FormField>
 
-                  <div className="mt-4">
-                    <Field name="height" type="range" min="512" max="768" step="64" className="range" />
-                    <div className="flex">
-                      <div className="flex-1">Height</div>
-                      <div className="w-full text-right">{props.values.height}px</div>
-                    </div>
-                  </div>
+                  <FormField label="Height" value={`${props.values.height}px`} hint="Height of your image.">
+                    <Field name="height" type="range" min="512" max="768" step="64" className="range range-sm" />
+                  </FormField>
 
-                  <div className="mt-4">
-                    <Field name="steps" type="range" min="20" max="50" step="1" className="range" />
-                    <div className="flex">
-                      <div className="flex-1">Steps</div>
-                      <div className="w-full text-right">{props.values.steps}</div>
-                    </div>
-                  </div>
+                  <FormField
+                    label="Steps"
+                    value={props.values.steps}
+                    hint="How many steps to spend generating your image."
+                  >
+                    <Field name="steps" type="range" min="30" max="75" step="1" className="range range-sm" />
+                  </FormField>
+
+                  <FormField
+                    label="Seed"
+                    value={props.values.seed}
+                    hint="The seed used to generate your image. Enable to manually set a seed."
+                    badge={false}
+                  >
+                    <Field name="seed" type="number" className="input w-full bg-neutral" />
+                  </FormField>
                 </div>
               </section>
               <section className="flex ml-4 flex-1 form-control align-center">
-                <div className="flex flex-1 bg-base-200 rounded-xl p-4 overflow-y-auto">
+                <div
+                  className="flex bg-base-200 rounded-xl p-4 justify-center"
+                  style={{ height: 'calc(100vh - 160px)' }}
+                >
                   {image ? (
-                    <div className="m-auto drop-shadow-md p-4 bg-neutral-focus rounded-md inline">
-                      <div className="relative">
-                        {isSubmitting && (
-                          <div
-                            className="flex flex-col justify-center align-middle absolute w-full h-full top-0 left-0 rounded-md text-3xl text-shadow-lg "
-                            style={{ backdropFilter: 'blur(10px)' }}
-                          >
-                            <Timer timer={timer} show={true} />
-                          </div>
-                        )}
-                        {image && <img src={image} width="100%" className="rounded-md" />}
-                      </div>
+                    <div className="drop-shadow-md p-4 bg-neutral-focus rounded-md">
+                      {isSubmitting && (
+                        <div
+                          className="flex flex-col justify-center align-middle absolute w-full h-full top-0 left-0 rounded-md text-3xl text-shadow-lg "
+                          style={{ backdropFilter: 'blur(10px)' }}
+                        >
+                          <Timer timer={timer} show={true} />
+                        </div>
+                      )}
+                      {image && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={image} className="rounded-md md:h-full" alt={props.values.prompt} />
+                      )}
                     </div>
                   ) : (
                     <div className="flex-1 justify-center align-middle">
@@ -126,10 +155,65 @@ const Home: NextPage = () => {
                 </div>
 
                 <div className="input-group mt-4">
-                  <Field name="prompt" type="text" className="input w-full bg-neutral" autoComplete="off" />
-                  <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
+                  <a className="btn btn-outline border-r-none" href="#my-modal-2">
+                    <Image src="/icons/maximize-2.svg" alt="Maximize" width={16} height={16} />
+                  </a>
+
+                  <Field name="prompt">
+                    {({ field }: { field: { onChange: () => void; value: string } }) => (
+                      <textarea
+                        name="prompt"
+                        id="prompt-text-area-small"
+                        className="input input-bordered w-full overflow-hidden leading-tight"
+                        onChange={field.onChange}
+                        defaultValue={field.value}
+                        style={{ resize: 'none', padding: '0.525rem' }}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            props.submitForm()
+                          }
+                        }}
+                      />
+                    )}
+                  </Field>
+                  <button className="btn btn-accent btn-bordered" type="submit" disabled={isSubmitting}>
                     go
                   </button>
+                </div>
+
+                <div className="modal" id="my-modal-2">
+                  <div className="modal-box w-11/12 max-w-5xl">
+                    <h3 className="font-bold text-lg">Prompt</h3>
+                    <Field name="prompt">
+                      {({ field }: { field: { onChange: () => void; value: string } }) => (
+                        <textarea
+                          name="prompt"
+                          id="prompt-text-area"
+                          className="textarea textarea-bordered w-full h-48 mt-2 leading-tight"
+                          onChange={field.onChange}
+                          defaultValue={field.value}
+                        />
+                      )}
+                    </Field>
+                    <div className='text-sm opacity-60'>
+                      <p>
+                        <strong>Example of a great prompt: </strong>
+                        skyfall, intricate, elegant, highly detailed, digital painting, artstation, concept art, smooth,
+                        sharp focus, illustration, art by artgerm and greg rutkowski and alphonse mucha and william -
+                        adolphe bouguereau.
+                      </p>
+                      <p className='mt-2'>
+                        There is a prompt builder <em>coming soon</em>. But till then,&nbsp; 
+                        <a href="https://promptomania.com/stable-diffusion-prompt-builder/" target="_blank" rel="noreferrer" className='underline'>Check this out.</a>.
+                      </p>
+                    </div>
+                    <div className="modal-action">
+                      <a href="#" className="btn" onClick={props.submitForm}>
+                        Save
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </section>
             </Form>
