@@ -64,7 +64,7 @@ model VerificationToken {
 
 model Dream {
     id          String   @id @default(cuid())
-    prompt      String
+    prompt      String   @db.Text
     width       Int
     height      Int
     steps       Int
