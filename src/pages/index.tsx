@@ -66,7 +66,7 @@ const Home: NextPage = () => {
     const resp = await axios.get(`/api/images/${jobId}`)
 
     if (resp.data.status === 'pending') {
-      return setTimeout(() => longPoll(jobId), 1000)
+      return setTimeout(() => longPoll(jobId), 2000)
     }
 
     setImage(resp.data[0].image)
