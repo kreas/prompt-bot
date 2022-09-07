@@ -13,7 +13,6 @@ type WebhookBody = {
 }
 
 const webhook = async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log('req.body', req.body)
   const { images, job_id, time } = req.body as WebhookBody
 
   for (const image of images) {

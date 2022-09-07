@@ -25,9 +25,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   })
 
-
-  console.log('images =================', images)
-
   res.status(200).json(images)
 }
 
