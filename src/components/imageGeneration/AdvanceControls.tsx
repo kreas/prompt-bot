@@ -9,11 +9,11 @@ const AdvanceControls: React.FC<AdvanceControlsProps> = ({ values }) => {
   return (
     <div className="form-control">
       <FormField label="Width" value={`${values.width}px`} hint="Width of your image.">
-        <Field name="width" type="range" min="512" max="768" step="64" className="range range-sm" />
+        <Field name="width" type="range" min="448" max="768" step="64" className="range range-sm" />
       </FormField>
 
       <FormField label="Height" value={`${values.height}px`} hint="Height of your image.">
-        <Field name="height" type="range" min="512" max="768" step="64" className="range range-sm" />
+        <Field name="height" type="range" min="448" max="768" step="64" className="range range-sm" />
       </FormField>
 
       <FormField label="Steps" value={values.steps} hint="How many steps to spend generating your image.">
