@@ -53,8 +53,8 @@ const ImageGenerationForm: React.FC = () => {
           values.height = 512
           break
         case '16:9':
-          values.width = 1024
-          values.height = 512
+          values.width = 768
+          values.height = 448
           break
       }
 
