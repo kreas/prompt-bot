@@ -4,7 +4,7 @@ import { GetServerSideProps } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Image from 'next/image'
-
+import { prisma } from '../server/db/client'
 interface GalleryProps {
   session: Session | null
   dreams: DreamImage[]
