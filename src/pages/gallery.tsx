@@ -4,7 +4,9 @@ import { GetServerSideProps } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Image from 'next/image'
+import Masonry from 'react-masonry-css'
 import { prisma } from '../server/db/client'
+import { truncate } from '../utils/truncate'
 interface GalleryProps {
   session: Session | null
   dreams: DreamImage[]
@@ -26,24 +28,37 @@ const Gallery: React.FC<GalleryProps> = ({ session, dreams }) => {
     }
   })
 
+  const breakpointColumnsObj = {
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1,
+  }
+
   return (
     <>
       <Head>
         <title>Scrollrack | Gallery</title>
       </Head>
 
-      <div className="columns-1 md:columns-3 xl:columns-4 flex-col w-screen p-4 gap-5 order-1">
+      <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4">
         {images.map((image) => (
-          <div className="card bg-base-300 shadow-xl w-full aspect-photo mb-5" key={image?.id}>
+          <div className="card bg-neutral shadow-xl w-full aspect-photo mb-5" key={image?.id}>
             <figure>
-              <Image src={image?.image} alt="image.prompt" key={image?.id} width={image?.width} height={image?.height} />
+              <Image
+                src={image?.image}
+                alt="image.prompt"
+                key={image?.id}
+                width={image?.width}
+                height={image?.height}
+              />
             </figure>
             <div className="card-body">
-              <p>{image?.prompt}</p>
+              <p>{truncate(image?.prompt, 90)}</p>
             </div>
           </div>
         ))}
-      </div>
+      </Masonry>
     </>
   )
 }
@@ -61,7 +76,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
     orderBy: {
       createdAt: 'desc',
-    }
+    },
   })
 
   if (!session) {
