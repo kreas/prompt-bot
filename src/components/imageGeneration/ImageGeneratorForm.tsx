@@ -10,8 +10,8 @@ import FormField from './FormField'
 
 const initialValues = {
   prompt: '',
-  width: 512,
-  height: 512,
+  width: 448,
+  height: 448,
   steps: 30,
   seed: 0,
   aspectRation: '1:1',
