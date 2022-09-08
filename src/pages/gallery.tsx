@@ -32,7 +32,7 @@ const Gallery: React.FC<GalleryProps> = ({ session, dreams }) => {
         <title>Scrollrack | Gallery</title>
       </Head>
 
-      <div className="columns-2 md:columns-3 xl:columns-4 flex-col w-screen p-4 gap-5 order-1">
+      <div className="columns-1 md:columns-3 xl:columns-4 flex-col w-screen p-4 gap-5 order-1">
         {images.map((image) => (
           <div className="card bg-base-300 shadow-xl w-full aspect-photo mb-5" key={image?.id}>
             <figure>
