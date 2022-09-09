@@ -43,7 +43,7 @@ const Gallery: React.FC<GalleryProps> = ({ dreams }) => {
         <title>Scrollrack | Gallery</title>
       </Head>
 
-      <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4">
+      <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4" style={{ margin: 20 }}>
         {images.map((image) => (
           <div className="card bg-neutral shadow-xl w-full aspect-photo mb-5" key={image?.id}>
             <figure>
