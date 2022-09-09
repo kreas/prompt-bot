@@ -1,5 +1,6 @@
 import { DreamImage } from '@prisma/client'
 import { authOptions } from 'api/auth/[...nextauth]'
+import CopyPrompt from 'components/CopyPrompt'
 import { GetServerSideProps } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
@@ -8,10 +9,10 @@ import Masonry from 'react-masonry-css'
 import { prisma } from '../server/db/client'
 import { truncate } from '../utils/truncate'
 interface GalleryProps {
-  session: Session | null
   dreams: DreamImage[]
 }
-const Gallery: React.FC<GalleryProps> = ({ session, dreams }) => {
+
+const Gallery: React.FC<GalleryProps> = ({ dreams }) => {
   const images = dreams.map((dream: any) => {
     const image = dream.dreamImages[0]
     if (!image) return null
@@ -25,6 +26,7 @@ const Gallery: React.FC<GalleryProps> = ({ session, dreams }) => {
       createdAt: dream.createdAt,
       width: dream.width,
       height: dream.height,
+      user: dream.user,
     }
   })
 
@@ -53,8 +55,24 @@ const Gallery: React.FC<GalleryProps> = ({ session, dreams }) => {
                 height={image?.height}
               />
             </figure>
-            <div className="card-body">
-              <p>{truncate(image?.prompt, 90)}</p>
+            <div className="card-body p-4">
+              <p className="text-sm">{truncate(image?.prompt, 200)}</p>
+              <div className="bg-base-200 rounded-lg p-2">
+                <div className="dropdown dropdown-top dropdown-end flex">
+                  <div className="flex-1 flex text-sm items-center">
+                    <Image src={image?.user?.image} alt="user" width={24} height={24} className="mask mask-circle" />
+                    <span className='ml-2'>{image?.user.name}</span>
+                  </div>
+                  <label tabIndex={0} className="btn btn-ghost btn-sm text-sm w-11">
+                    <Image src="/icons/more-vertical.svg" alt="share" width={24} height={24} />
+                  </label>
+                  <div>
+                    <ul tabIndex={0} className="dropdown-content menu p-2 shadow-md bg-base-100 rounded-box w-52 mb-1 text-sm">
+                      <li><CopyPrompt prompt={image?.prompt} /></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         ))}
@@ -73,6 +91,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
     include: {
       dreamImages: true,
+      user: true,
     },
     orderBy: {
       createdAt: 'desc',
@@ -90,7 +109,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      session,
       dreams: JSON.parse(JSON.stringify(dreams)),
     },
   }
