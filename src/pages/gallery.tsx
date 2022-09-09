@@ -5,6 +5,7 @@ import { GetServerSideProps } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Image from 'next/image'
+import { useState } from 'react'
 import Masonry from 'react-masonry-css'
 import { prisma } from '../server/db/client'
 import { truncate } from '../utils/truncate'
@@ -12,7 +13,21 @@ interface GalleryProps {
   dreams: DreamImage[]
 }
 
+interface Image {
+  id: number
+  dreamId: number
+  prompt: string
+  image: string
+  seed: number
+  createdAt: Date
+  width: number
+  height: number
+  user: Record<string, any>
+}
+
 const Gallery: React.FC<GalleryProps> = ({ dreams }) => {
+  const [selectedImage, setSelectedImage] = useState<Image | null>(null)
+
   const images = dreams.map((dream: any) => {
     const image = dream.dreamImages[0]
     if (!image) return null
@@ -37,6 +52,15 @@ const Gallery: React.FC<GalleryProps> = ({ dreams }) => {
     500: 1,
   }
 
+  const upscaleImage = (image: Image | null, scale: number) => {
+    if (!image) return null
+
+    image.width = image.width * scale
+    image.height = image.height * scale
+
+    return image
+  }
+
   return (
     <>
       <Head>
@@ -46,29 +70,36 @@ const Gallery: React.FC<GalleryProps> = ({ dreams }) => {
       <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4" style={{ margin: 20 }}>
         {images.map((image) => (
           <div className="card bg-neutral shadow-xl w-full aspect-photo mb-5" key={image?.id}>
-            <figure>
-              <Image
-                src={image?.image}
-                alt="image.prompt"
-                key={image?.id}
-                width={image?.width}
-                height={image?.height}
-              />
-            </figure>
+            <label htmlFor="gallery-modal" onClick={() => setSelectedImage(upscaleImage(image, 1.5))}>
+              <figure>
+                <Image
+                  src={image?.image}
+                  alt="image.prompt"
+                  key={image?.id}
+                  width={image?.width}
+                  height={image?.height}
+                />
+              </figure>
+            </label>
             <div className="card-body p-4">
               <p className="text-sm">{truncate(image?.prompt, 200)}</p>
               <div className="bg-base-200 rounded-lg p-2">
                 <div className="dropdown dropdown-top dropdown-end flex">
                   <div className="flex-1 flex text-sm items-center">
                     <Image src={image?.user?.image} alt="user" width={24} height={24} className="mask mask-circle" />
-                    <span className='ml-2'>{image?.user.name}</span>
+                    <span className="ml-2">{image?.user.name}</span>
                   </div>
                   <label tabIndex={0} className="btn btn-ghost btn-sm text-sm w-11">
                     <Image src="/icons/more-vertical.svg" alt="share" width={24} height={24} />
                   </label>
                   <div>
-                    <ul tabIndex={0} className="dropdown-content menu p-2 shadow-md bg-base-100 rounded-box w-52 mb-1 text-sm">
-                      <li><CopyPrompt prompt={image?.prompt} /></li>
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content menu p-2 shadow-md bg-base-100 rounded-box w-52 mb-1 text-sm"
+                    >
+                      <li>
+                        <CopyPrompt prompt={image?.prompt} />
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -77,6 +108,30 @@ const Gallery: React.FC<GalleryProps> = ({ dreams }) => {
           </div>
         ))}
       </Masonry>
+
+      <input type="checkbox" id="gallery-modal" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box max-w-6xl" style={{ width: selectedImage?.width }}>
+          <label
+            htmlFor="gallery-modal"
+            className="btn btn-sm btn-circle absolute right-2 top-2"
+            style={{ zIndex: 50 }}
+            onClick={() => setSelectedImage(null)}
+          >
+            ✕
+          </label>
+          <div className="rounded rounded-xl flex">
+            {selectedImage && (
+              <Image
+                src={selectedImage?.image}
+                width={selectedImage.width}
+                height={selectedImage.height}
+                alt={selectedImage.prompt}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </>
   )
 }
