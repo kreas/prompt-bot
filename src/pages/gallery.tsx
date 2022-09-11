@@ -18,15 +18,15 @@ interface GalleryProps {
 
 const Gallery: React.FC<GalleryProps> = () => {
   const [selectedImage, setSelectedImage] = useState<ImageObj | null>(null)
+  const [favorites, setFavorites] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-  const trpcQuery = trpc.useInfiniteQuery(['gallery.my-items', { limit: 10 }], {
+  const trpcQuery = trpc.useInfiniteQuery(['gallery.my-items', { limit: 10, favorites }], {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 
-  const { isLoading, isFetching, fetchNextPage, hasNextPage, error } = trpcQuery
+  const { fetchNextPage, hasNextPage } = trpcQuery
   const images = extractDreams(trpcQuery)
-
 
   useIntersectionObserver({
     target: loadMoreRef,
@@ -47,9 +47,18 @@ const Gallery: React.FC<GalleryProps> = () => {
         <title>Scrollrack | Gallery</title>
       </Head>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col mx-6">
+        <div className="tabs mb-6">
+          <a className={`tab tab-bordered ${favorites || 'tab-active'}`} onClick={() => setFavorites(false)}>
+            All
+          </a>
+          <a className={`tab tab-bordered ${favorites && 'tab-active'}`} onClick={() => setFavorites(true)}>
+            Favorites
+          </a>
+        </div>
+
         <section id="gallery">
-          <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4" style={{ margin: 20 }}>
+          <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4" style={{ margin: 0 }}>
             {images.map((image) => image && <ImageCard image={image} selectImage={setSelectedImage} key={image?.id} />)}
           </Masonry>
         </section>
@@ -60,9 +69,7 @@ const Gallery: React.FC<GalleryProps> = () => {
           <p className="text-center text-sm">
             You have reached the end... &nbsp;
             <Link href="/">
-              <a className="bold underline">
-                Go dream some more.
-              </a>
+              <a className="bold underline">Go dream some more.</a>
             </Link>
           </p>
         )}
