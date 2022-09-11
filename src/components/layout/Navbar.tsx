@@ -8,7 +8,7 @@ const NavBar: React.FC = () => {
   return (
     <>
       <div className="navbar bg-base-300 w-full drop-shadow-sm mb-4">
-        <div className="flex-none">
+        <div className="navbar-start">
           <label htmlFor="sidebar" className="btn btn-square btn-ghost">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -20,13 +20,13 @@ const NavBar: React.FC = () => {
             </svg>
           </label>
         </div>
-        <div className="flex-1">
+        <div className="navbar-center hidden md:inline-flex">
           <Link href="/">
             <a className="btn btn-ghost normal-case text-xl">scrollrack</a>
           </Link>
         </div>
-        <div className="flex-none hidden md:block">
-          <ul>
+        <div className="navbar-end hidden md:inline-flex">
+          <ul className=''>
             <li>
               {session ? (
                 <Link href="/projects">

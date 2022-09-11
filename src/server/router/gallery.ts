@@ -34,6 +34,7 @@ const galleryRouter = createProtectedRouter()
   })
   .query('my-items', {
     input: z.object({
+      favorites: z.boolean().optional(),
       limit: z.number().min(1).max(100).nullish().default(20),
       cursor: z.string().optional(),
     }),
@@ -42,11 +43,6 @@ const galleryRouter = createProtectedRouter()
       const { cursor } = input
 
       const dreams = await prisma?.dream.findMany({
-        where: {
-          userId: ctx.session.user?.id,
-          status: 'complete',
-        },
-        cursor: cursor ? { id: cursor } : undefined,
         include: {
           dreamImages: {
             include: {
@@ -59,6 +55,20 @@ const galleryRouter = createProtectedRouter()
           },
           user: true,
         },
+        where: {
+          userId: ctx.session.user?.id,
+          status: 'complete',
+          dreamImages: input.favorites ? {
+            some: {
+              FavoriteDreams: {
+                some: {
+                  userId: ctx.session.user?.id,
+                }
+              }
+            }
+          } : undefined,
+        },
+        cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
           createdAt: 'desc',
         },
