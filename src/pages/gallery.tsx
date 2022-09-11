@@ -1,12 +1,16 @@
 import { authOptions } from 'api/auth/[...nextauth]'
 import { GetServerSideProps } from 'next'
-import { Session, unstable_getServerSession } from 'next-auth'
+import { Session, unstable_getServerSession, User } from 'next-auth'
 import { trpc } from 'src/utils/trpc'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Head from 'next/head'
 import ImageCard, { ImageObj } from '../components/ImageCard'
 import ImageModal from 'components/ImageModal'
 import Masonry from 'react-masonry-css'
+import { extractDreams } from 'src/utils/extractDreams'
+// import Link from 'next/link'
+import { useIntersectionObserver } from 'src/hooks/userIntersectionObserver'
+import Link from 'next/link'
 
 interface GalleryProps {
   session: Session | null
@@ -14,25 +18,20 @@ interface GalleryProps {
 
 const Gallery: React.FC<GalleryProps> = () => {
   const [selectedImage, setSelectedImage] = useState<ImageObj | null>(null)
-  const { data: dreams } = trpc.useQuery(['gallery.items.my-items'])
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-  if (!dreams) return null
+  const trpcQuery = trpc.useInfiniteQuery(['gallery.items.my-items', { limit: 10 }], {
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  })
 
-  const images = dreams.map((dream: any) => {
-    const image = dream.dreamImages[0]
-    if (!image) return null
+  const { isLoading, isFetching, fetchNextPage, hasNextPage, error } = trpcQuery
+  const images = extractDreams(trpcQuery)
 
-    return {
-      id: image.id,
-      dreamId: dream.id,
-      prompt: dream.prompt,
-      image: image.image,
-      seed: image.seed,
-      createdAt: dream.createdAt,
-      width: dream.width,
-      height: dream.height,
-      user: dream.user,
-    }
+
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage,
   })
 
   const breakpointColumnsObj = {
@@ -48,9 +47,26 @@ const Gallery: React.FC<GalleryProps> = () => {
         <title>Scrollrack | Gallery</title>
       </Head>
 
-      <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4" style={{ margin: 20 }}>
-        {images.map((image) => image && <ImageCard image={image} selectImage={setSelectedImage} key={image?.id} />)}
-      </Masonry>
+      <div className="flex flex-col">
+        <section id="gallery">
+          <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4" style={{ margin: 20 }}>
+            {images.map((image) => image && <ImageCard image={image} selectImage={setSelectedImage} key={image?.id} />)}
+          </Masonry>
+        </section>
+
+        <div id="scroll-end" ref={loadMoreRef} />
+
+        {!hasNextPage && (
+          <p className="text-center text-sm">
+            You have reached the end... &nbsp;
+            <Link href="/">
+              <a className="bold underline">
+                Go dream some more.
+              </a>
+            </Link>
+          </p>
+        )}
+      </div>
 
       {selectedImage && <ImageModal image={selectedImage} onClose={() => setSelectedImage(null)} />}
     </>
