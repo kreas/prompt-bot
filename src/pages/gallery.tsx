@@ -1,48 +1,37 @@
-import { DreamImage } from '@prisma/client'
 import { authOptions } from 'api/auth/[...nextauth]'
-import CopyPrompt from 'components/CopyPrompt'
 import { GetServerSideProps } from 'next'
-import { Session, unstable_getServerSession } from 'next-auth'
+import { Session, unstable_getServerSession, User } from 'next-auth'
+import { trpc } from 'src/utils/trpc'
+import { useRef, useState } from 'react'
 import Head from 'next/head'
-import Image from 'next/image'
-import { useState } from 'react'
+import ImageCard, { ImageObj } from '../components/ImageCard'
+import ImageModal from 'components/ImageModal'
 import Masonry from 'react-masonry-css'
-import { prisma } from '../server/db/client'
-import { truncate } from '../utils/truncate'
+import { extractDreams } from 'src/utils/extractDreams'
+// import Link from 'next/link'
+import { useIntersectionObserver } from 'src/hooks/userIntersectionObserver'
+import Link from 'next/link'
+
 interface GalleryProps {
-  dreams: DreamImage[]
+  session: Session | null
 }
 
-interface Image {
-  id: number
-  dreamId: number
-  prompt: string
-  image: string
-  seed: number
-  createdAt: Date
-  width: number
-  height: number
-  user: Record<string, any>
-}
+const Gallery: React.FC<GalleryProps> = () => {
+  const [selectedImage, setSelectedImage] = useState<ImageObj | null>(null)
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-const Gallery: React.FC<GalleryProps> = ({ dreams }) => {
-  const [selectedImage, setSelectedImage] = useState<Image | null>(null)
+  const trpcQuery = trpc.useInfiniteQuery(['gallery.items.my-items', { limit: 10 }], {
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  })
 
-  const images = dreams.map((dream: any) => {
-    const image = dream.dreamImages[0]
-    if (!image) return null
+  const { isLoading, isFetching, fetchNextPage, hasNextPage, error } = trpcQuery
+  const images = extractDreams(trpcQuery)
 
-    return {
-      id: image.id,
-      dreamId: dream.id,
-      prompt: dream.prompt,
-      image: image.image,
-      seed: image.seed,
-      createdAt: dream.createdAt,
-      width: dream.width,
-      height: dream.height,
-      user: dream.user,
-    }
+
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage,
   })
 
   const breakpointColumnsObj = {
@@ -52,106 +41,40 @@ const Gallery: React.FC<GalleryProps> = ({ dreams }) => {
     500: 1,
   }
 
-  const upscaleImage = (image: Image | null, scale: number) => {
-    if (!image) return null
-
-    image.width = image.width * scale
-    image.height = image.height * scale
-
-    return image
-  }
-
   return (
     <>
       <Head>
         <title>Scrollrack | Gallery</title>
       </Head>
 
-      <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4" style={{ margin: 20 }}>
-        {images.map((image) => (
-          <div className="card bg-neutral shadow-xl w-full aspect-photo mb-5" key={image?.id}>
-            <label htmlFor="gallery-modal" onClick={() => setSelectedImage(upscaleImage(image, 1.5))}>
-              <figure>
-                <Image
-                  src={image?.image}
-                  alt="image.prompt"
-                  key={image?.id}
-                  width={image?.width}
-                  height={image?.height}
-                />
-              </figure>
-            </label>
-            <div className="card-body p-4">
-              <p className="text-sm">{truncate(image?.prompt, 200)}</p>
-              <div className="bg-base-200 rounded-lg p-2">
-                <div className="dropdown dropdown-top dropdown-end flex">
-                  <div className="flex-1 flex text-sm items-center">
-                    <Image src={image?.user?.image} alt="user" width={24} height={24} className="mask mask-circle" />
-                    <span className="ml-2">{image?.user.name}</span>
-                  </div>
-                  <label tabIndex={0} className="btn btn-ghost btn-sm text-sm w-11">
-                    <Image src="/icons/more-vertical.svg" alt="share" width={24} height={24} />
-                  </label>
-                  <div>
-                    <ul
-                      tabIndex={0}
-                      className="dropdown-content menu p-2 shadow-md bg-base-100 rounded-box w-52 mb-1 text-sm"
-                    >
-                      <li>
-                        <CopyPrompt prompt={image?.prompt} />
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </Masonry>
+      <div className="flex flex-col">
+        <section id="gallery">
+          <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 p-4" style={{ margin: 20 }}>
+            {images.map((image) => image && <ImageCard image={image} selectImage={setSelectedImage} key={image?.id} />)}
+          </Masonry>
+        </section>
 
-      <input type="checkbox" id="gallery-modal" className="modal-toggle" />
-      <div className="modal">
-        <div className="modal-box max-w-6xl" style={{ width: selectedImage?.width }}>
-          <label
-            htmlFor="gallery-modal"
-            className="btn btn-sm btn-circle absolute right-2 top-2"
-            style={{ zIndex: 50 }}
-            onClick={() => setSelectedImage(null)}
-          >
-            ✕
-          </label>
-          <div className="rounded rounded-xl flex">
-            {selectedImage && (
-              <Image
-                src={selectedImage?.image}
-                width={selectedImage.width}
-                height={selectedImage.height}
-                alt={selectedImage.prompt}
-              />
-            )}
-          </div>
-        </div>
+        <div id="scroll-end" ref={loadMoreRef} />
+
+        {!hasNextPage && (
+          <p className="text-center text-sm">
+            You have reached the end... &nbsp;
+            <Link href="/">
+              <a className="bold underline">
+                Go dream some more.
+              </a>
+            </Link>
+          </p>
+        )}
       </div>
+
+      {selectedImage && <ImageModal image={selectedImage} onClose={() => setSelectedImage(null)} />}
     </>
   )
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await unstable_getServerSession(context.req, context.res, authOptions)
-
-  const dreams = await prisma?.dream.findMany({
-    where: {
-      userId: session?.user?.id,
-      status: 'complete',
-    },
-    include: {
-      dreamImages: true,
-      user: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
 
   if (!session) {
     return {
@@ -163,9 +86,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   return {
-    props: {
-      dreams: JSON.parse(JSON.stringify(dreams)),
-    },
+    props: { session },
   }
 }
 
