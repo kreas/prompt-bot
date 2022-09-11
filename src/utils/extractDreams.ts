@@ -33,6 +33,7 @@ export const extractDreams = (query: Query) => {
       width: dream.width,
       height: dream.height,
       user: dream.user,
+      favorite: image.FavoriteDreams.length > 0,
     }
   })
 }

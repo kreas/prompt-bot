@@ -20,7 +20,7 @@ const Gallery: React.FC<GalleryProps> = () => {
   const [selectedImage, setSelectedImage] = useState<ImageObj | null>(null)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-  const trpcQuery = trpc.useInfiniteQuery(['gallery.items.my-items', { limit: 10 }], {
+  const trpcQuery = trpc.useInfiniteQuery(['gallery.my-items', { limit: 10 }], {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 
