@@ -1,9 +1,11 @@
 import Image from 'next/image'
+import { useState } from 'react'
+import { trpc } from 'src/utils/trpc'
 import { truncate } from 'src/utils/truncate'
 import CopyPrompt from './CopyPrompt'
 
 export interface ImageObj {
-  id: number
+  id: string
   dreamId: number
   prompt: string
   image: string
@@ -12,6 +14,7 @@ export interface ImageObj {
   width: number
   height: number
   user: Record<string, any>
+  favorite: boolean
 }
 
 interface ImageCardProps {
@@ -20,6 +23,8 @@ interface ImageCardProps {
 }
 
 const ImageCard: React.FC<ImageCardProps> = ({ image, selectImage }) => {
+  const [isFavorite, setIsFavorite] = useState(image.favorite)
+  const mutation = trpc.useMutation('gallery.toggle-favorite')
 
   const upscaleImage = (image: ImageObj, scale: number): ImageObj => {
     image.width = image.width * scale
@@ -28,17 +33,23 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, selectImage }) => {
     return image
   }
 
+  const handleFavorite = () => {
+    mutation.mutate({ imageId: image.id })
+    setIsFavorite(!isFavorite)
+  }
+
   return (
     <div className="card bg-neutral shadow-xl w-full aspect-photo mb-5">
       <label htmlFor="gallery-modal" onClick={() => selectImage(upscaleImage(image, 1.5))}>
         <div>
           <button className="absolute z-10 bg-transparent right-3 top-3">
             <Image
-              src={'/icons/heart-full.svg'}
+              src={isFavorite ? '/icons/heart-full.svg' : '/icons/heart-empty.svg'}
               width={24}
               height={24}
-              className="absolute z-10 top-2 right-2 opacity-50 hover:opacity-100"
+              className="absolute z-10 top-2 right-2 opacity-30 hover:opacity-100"
               alt="favorite"
+              onClick={handleFavorite}
             />
           </button>
 
