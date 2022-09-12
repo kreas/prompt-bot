@@ -8,15 +8,13 @@ export default function Document() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
         <meta property="og:title" content="AI powered asset generator for Magic the Gathering" />
         <meta property="og:description" content="Create unique tokens, playmats, and more," />
-        <meta
-          property="og:image"
-          content="https://www.scrollrack.quest/og-image.jpg"
-        />
+        <meta property="og:image" content="https://www.scrollrack.quest/og-image.jpg" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <body>
         <Main />
         <NextScript />
+        <script defer data-domain="scrollrack.quest" src="https://plausible.io/js/plausible.js"></script>
       </body>
     </Html>
   )
