@@ -1,0 +1,10 @@
+name = "dreamstorage"
+main = "src/index.ts"
+compatibility_date = "2022-09-12"
+
+account_id = "5291ed0146b6509eecceb89f2d915f95"
+workers_dev = true
+
+[[r2_buckets]]
+binding = 'DREAM_BUCKET' # <~ valid JavaScript variable name
+bucket_name = 'scrollrack'
