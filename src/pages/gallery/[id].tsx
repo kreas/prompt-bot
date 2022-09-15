@@ -1,8 +1,5 @@
-import { DreamImage } from '@prisma/client'
 import { GetServerSideProps } from 'next'
 import { trpc } from 'src/utils/trpc'
-import Image from 'next/image'
-import CopyPrompt from 'components/CopyPrompt'
 import DreamPreview from 'components/DreamPreview'
 
 type ViewDreamImageProps = {
