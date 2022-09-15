@@ -4,7 +4,7 @@ import { trpc } from 'src/utils/trpc'
 import { truncate } from 'src/utils/truncate'
 import CopyPrompt from './CopyPrompt'
 
-export interface ImageObj {
+export interface DreamObj {
   id: string
   dreamId: number
   prompt: string
@@ -17,21 +17,14 @@ export interface ImageObj {
   favorite: boolean
 }
 
-interface ImageCardProps {
-  image: ImageObj
-  selectImage: (image: ImageObj) => void
+interface DreamCardProps {
+  image: DreamObj
+  selectImage: (id: string) => void
 }
 
-const ImageCard: React.FC<ImageCardProps> = ({ image, selectImage }) => {
+const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
   const [isFavorite, setIsFavorite] = useState(image.favorite)
   const mutation = trpc.useMutation('gallery.toggle-favorite')
-
-  const upscaleImage = (image: ImageObj, scale: number): ImageObj => {
-    image.width = image.width * scale
-    image.height = image.height * scale
-
-    return image
-  }
 
   const handleFavorite = () => {
     mutation.mutate({ imageId: image.id })
@@ -40,24 +33,20 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, selectImage }) => {
 
   return (
     <div className="card bg-neutral shadow-xl w-full aspect-photo mb-5">
-      <label htmlFor="gallery-modal" onClick={() => selectImage(upscaleImage(image, 1.5))}>
-        <div>
-          <button className="absolute z-10 bg-transparent right-3 top-3">
-            <Image
-              src={isFavorite ? '/icons/heart-full.svg' : '/icons/heart-empty.svg'}
-              width={24}
-              height={24}
-              className="absolute z-10 top-2 right-2 opacity-30 hover:opacity-100"
-              alt="favorite"
-              onClick={handleFavorite}
-            />
-          </button>
-
-          <figure>
-            <Image src={image?.image} alt="image.prompt" key={image?.id} width={image?.width} height={image?.height} />
-          </figure>
-        </div>
-      </label>
+      <figure>
+        <a href='#preview' onClick={() => selectImage(image.id)}>
+          <Image src={image?.image} alt="image.prompt" key={image?.id} width={image?.width} height={image?.height} />
+        </a>
+      </figure>
+      <button className="absolute z-10 bg-transparent right-3 top-3" onClick={handleFavorite}>
+        <Image
+          src={isFavorite ? '/icons/heart-full.svg' : '/icons/heart-empty.svg'}
+          width={24}
+          height={24}
+          className="absolute z-10 top-2 right-2 opacity-30 hover:opacity-100"
+          alt="favorite"
+        />
+      </button>
       <div className="card-body p-4">
         <p className="text-sm">{truncate(image?.prompt, 200)}</p>
         <div className="bg-base-200 rounded-lg p-2">
@@ -75,7 +64,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, selectImage }) => {
                 className="dropdown-content menu p-2 shadow-md bg-base-100 rounded-box w-52 mb-1 text-sm"
               >
                 <li>
-                  <CopyPrompt prompt={image?.prompt} />
+                  <CopyPrompt prompt={image?.prompt} className={''} />
                 </li>
               </ul>
             </div>

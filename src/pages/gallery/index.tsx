@@ -1,23 +1,23 @@
 import { authOptions } from 'api/auth/[...nextauth]'
-import { GetServerSideProps } from 'next'
-import { Session, unstable_getServerSession, User } from 'next-auth'
-import { trpc } from 'src/utils/trpc'
-import { useRef, useState } from 'react'
-import Head from 'next/head'
-import ImageCard, { ImageObj } from '../components/ImageCard'
-import ImageModal from 'components/ImageModal'
-import Masonry from 'react-masonry-css'
 import { extractDreams } from 'src/utils/extractDreams'
-// import Link from 'next/link'
+import { GetServerSideProps } from 'next'
+import { Session, unstable_getServerSession } from 'next-auth'
+import { trpc } from 'src/utils/trpc'
 import { useIntersectionObserver } from 'src/hooks/userIntersectionObserver'
+import { useRef, useState } from 'react'
+import DreamCard from '../../components/DreamCard'
+import DreamModal from 'components/DreamModal'
+import Head from 'next/head'
 import Link from 'next/link'
+import Masonry from 'react-masonry-css'
+import DreamPreview from 'components/DreamPreview'
 
 interface GalleryProps {
   session: Session | null
 }
 
 const Gallery: React.FC<GalleryProps> = () => {
-  const [selectedImage, setSelectedImage] = useState<ImageObj | null>(null)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [favorites, setFavorites] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
@@ -59,7 +59,7 @@ const Gallery: React.FC<GalleryProps> = () => {
 
         <section id="gallery">
           <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4" style={{ margin: 0 }}>
-            {images.map((image) => image && <ImageCard image={image} selectImage={setSelectedImage} key={image?.id} />)}
+            {images.map((image) => image && <DreamCard image={image} selectImage={setSelectedImage} key={image?.id} />)}
           </Masonry>
         </section>
 
@@ -75,7 +75,11 @@ const Gallery: React.FC<GalleryProps> = () => {
         )}
       </div>
 
-      {selectedImage && <ImageModal image={selectedImage} onClose={() => setSelectedImage(null)} />}
+      {selectedImage && (
+        <DreamModal>
+          <DreamPreview dreamId={selectedImage} />
+        </DreamModal>
+      )}
     </>
   )
 }

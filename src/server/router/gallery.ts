@@ -89,5 +89,26 @@ const galleryRouter = createProtectedRouter()
       }
     },
   })
+  .query('image', {
+    input: z.object({
+      id: z.string(),
+    }),
+    async resolve({ input }) {
+      const { id } = input
+
+      return await prisma.dreamImage.findFirst({
+        where: {
+          id: id
+        },
+        include: {
+          dream: {
+            include: {
+              user: true,
+            },
+          }
+        }
+      })
+    }
+  })
 
 export default galleryRouter
