@@ -7,7 +7,7 @@ const NavBar: React.FC = () => {
 
   return (
     <>
-      <div className="navbar bg-base-300 w-full drop-shadow-sm mb-4">
+      <div className="navbar bg-base-300 w-full drop-shadow-sm mb-4 absolute top-0 lef-0 right-0" style={{ zIndex: 10_000 }}>
         <div className="navbar-start">
           <label htmlFor="sidebar" className="btn btn-square btn-ghost">
             <svg

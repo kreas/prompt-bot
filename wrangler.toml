@@ -1,0 +1,8 @@
+name = "scrollrack"
+main = "./cloudflare_workers/buckets/index.ts"
+compatibility_date = "2022-09-12"
+
+[[r2_buckets]]
+binding = 'BUCKET_NAME' # <~ valid JavaScript variable name
+bucket_name = 'scrollrack'
+
