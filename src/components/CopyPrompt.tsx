@@ -3,9 +3,10 @@ import Image from 'next/image'
 
 interface CopyPromptProps {
   prompt: string
+  className: string
 }
 
-const CopyPrompt: React.FC<CopyPromptProps> = ({ prompt }) => {
+const CopyPrompt: React.FC<CopyPromptProps> = ({ prompt, className = '' }) => {
   const [copied, setCopied] = useState(false)
 
   if (!prompt) return null
@@ -20,12 +21,12 @@ const CopyPrompt: React.FC<CopyPromptProps> = ({ prompt }) => {
 
   return (
     <button
-      className={`${copied && 'tooltip tooltip-open'} text-center tooltip-top tooltip-info flex`}
+      className={`${copied && 'tooltip tooltip-open'} text-center tooltip-top tooltip-info flex gap-2 capitalize ${className}`}
       data-tip="copied"
       onClick={() => copyPrompt(prompt)}
     >
       <Image src="/icons/clipboard.svg" alt="copy" width={14} height={14} />
-      <span>Copy Prompt</span>
+      Copy Prompt
     </button>
   )
 }
