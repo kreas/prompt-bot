@@ -94,7 +94,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId, image }) => {
               <div className="text-xs opacity-70 uppercase">Seed</div>
               <div className="text-lg">
                 {image.seed}
-                <button className="btn btn-sm btn-ghost px-2" onClick={() => navigator.clipboard.writeText(image.seed)}>
+                <button className="btn btn-sm btn-ghost px-2" onClick={() => navigator.clipboard.writeText(`${image?.seed || '0'}`)}>
                   <Image src="/icons/clipboard.svg" width={14} height={14} alt="Copy" />
                 </button>
               </div>
