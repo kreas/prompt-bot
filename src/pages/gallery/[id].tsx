@@ -7,15 +7,9 @@ type ViewDreamImageProps = {
 }
 
 const ViewDreamImage: React.FC<ViewDreamImageProps> = ({ id }) => {
-  const { data: image } = trpc.useQuery(['gallery.image', { id }])
-
-  if (!image) {
-    return <div>Loading...</div>
-  }
-
   return (
     <div className="w-full mx-4">
-      <DreamPreview image={image} />
+      <DreamPreview dreamId={id} />
     </div>
   )
 }

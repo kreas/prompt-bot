@@ -6,6 +6,7 @@ generator client {
 datasource db {
   provider             = "mysql"
   url                  = env("DATABASE_URL")
+  // shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
   referentialIntegrity = "prisma"
 }
 
@@ -83,6 +84,7 @@ model DreamImage {
   createdAt      DateTime        @default(now())
   shared         Boolean         @default(false)
   FavoriteDreams FavoriteDream[]
+  upscaledDream  UpscaledDream?
 }
 
 model FavoriteDream {
@@ -91,4 +93,14 @@ model FavoriteDream {
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   dreamImageId String
   dreamImage   DreamImage @relation(fields: [dreamImageId], references: [id], onDelete: Cascade)
+}
+
+model UpscaledDream {
+  id               String     @id @default(cuid())
+  dreamImageId     String     @unique
+  dreamImage       DreamImage @relation(fields: [dreamImageId], references: [id], onDelete: Cascade)
+  upscaledImageURL String?
+  createdAt        DateTime   @default(now())
+  status           String     @default("pending")
+  scale            Int
 }
