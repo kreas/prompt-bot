@@ -105,7 +105,8 @@ const galleryRouter = createProtectedRouter()
             include: {
               user: true,
             },
-          }
+          },
+          upscaledDream: true
         }
       })
     }
