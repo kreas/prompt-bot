@@ -1,9 +1,9 @@
 import { Dream, DreamImage, UpscaledDream, User } from '@prisma/client'
 import Image from 'next/image'
 import { trpc } from 'src/utils/trpc'
-import CopyPrompt from './CopyPrompt'
+import CopyPrompt from '../CopyPrompt'
 import Lottie from 'lottie-react'
-import spinner from '../animations/spinner.json'
+import spinner from '../../animations/spinner.json'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 
