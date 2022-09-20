@@ -11,7 +11,7 @@ const DreamModal: React.FC<DreamModalProps> = ({ children }) => {
             ✕
           </a>
           <div className="flex w-full h-full bg-base-100">
-            <div className="w-full overflow-scroll p-4">
+            <div className="w-full overflow-auto p-4">
               {children}
             </div>
           </div>

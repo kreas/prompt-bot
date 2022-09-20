@@ -22,7 +22,7 @@ const Projects: NextPage = () => {
       </Head>
 
       <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
-        <h1>Prompt Bot</h1>
+        <h1>Something wicked this way comes</h1>
       </main>
     </>
   )
