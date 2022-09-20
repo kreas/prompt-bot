@@ -5,12 +5,12 @@ import { Session, unstable_getServerSession } from 'next-auth'
 import { trpc } from 'src/utils/trpc'
 import { useIntersectionObserver } from 'src/hooks/userIntersectionObserver'
 import { useRef, useState } from 'react'
-import DreamCard from '../../components/DreamCard'
-import DreamModal from 'components/DreamModal'
+import Card from 'components/dreams/Card'
+import Modal from 'components/dreams/Modal'
 import Head from 'next/head'
 import Link from 'next/link'
 import Masonry from 'react-masonry-css'
-import DreamPreview from 'components/DreamPreview'
+import Preview from 'components/dreams/Preview'
 
 interface GalleryProps {
   session: Session | null
@@ -25,7 +25,7 @@ const Gallery: React.FC<GalleryProps> = () => {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 
-  const { fetchNextPage, hasNextPage } = trpcQuery
+  const { fetchNextPage, hasNextPage } = trpcQuery || {}
   const images = extractDreams(trpcQuery)
 
   useIntersectionObserver({
@@ -47,8 +47,8 @@ const Gallery: React.FC<GalleryProps> = () => {
         <title>Scrollrack | Gallery</title>
       </Head>
 
-      <div className="flex flex-col mx-6">
-        <div className="tabs mb-6">
+      <div className="flex flex-col flex-1 gap-4 h-full">
+        <div className="tabs px-4">
           <a className={`tab tab-bordered ${favorites || 'tab-active'}`} onClick={() => setFavorites(false)}>
             All
           </a>
@@ -57,13 +57,12 @@ const Gallery: React.FC<GalleryProps> = () => {
           </a>
         </div>
 
-        <section id="gallery">
-          <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4" style={{ margin: 0 }}>
-            {images.map((image) => image && <DreamCard image={image} selectImage={setSelectedImage} key={image?.id} />)}
+        <section id="gallery no-scrollbar" style={{ overflowY: 'scroll' }}>
+          <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 px-4" style={{ margin: 0 }}>
+            {images.map((image) => image && <Card image={image} selectImage={setSelectedImage} key={image?.id} />)}
           </Masonry>
+          <div id="scroll-end" className='mb-28' ref={loadMoreRef} />
         </section>
-
-        <div id="scroll-end" ref={loadMoreRef} />
 
         {!hasNextPage && (
           <p className="text-center text-sm">
@@ -76,9 +75,9 @@ const Gallery: React.FC<GalleryProps> = () => {
       </div>
 
       {selectedImage && (
-        <DreamModal>
-          <DreamPreview dreamId={selectedImage} />
-        </DreamModal>
+        <Modal>
+          <Preview dreamId={selectedImage} />
+        </Modal>
       )}
     </>
   )

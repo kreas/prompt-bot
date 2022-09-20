@@ -8,7 +8,7 @@ const SideBar: React.FC<SideBarProps> = ({ children }) => {
   return (
     <div className="drawer">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content">
+      <div className="drawer-content overflow-hidden">
         {children}
       </div>
       <div className="drawer-side">

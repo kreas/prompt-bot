@@ -8,9 +8,9 @@ type BaseLayoutProps = {
 const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   return (
     <SideBar>
-      <div className="flex flex-col w-full min-h-screen">
-        <NavBar/>
-        <main className="flex flex-1 w-full m-auto mb-4 mt-20">{children}</main>
+      <div className="flex gap-4 flex-col w-full h-screen overflow-hidden">
+        <NavBar />
+        <main className="flex-1 w-full h-full no-scrollbar">{children}</main>
       </div>
     </SideBar>
   )
