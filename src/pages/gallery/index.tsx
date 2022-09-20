@@ -21,7 +21,7 @@ const Gallery: React.FC<GalleryProps> = () => {
   const [favorites, setFavorites] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-  const trpcQuery = trpc.useInfiniteQuery(['gallery.my-items', { limit: 10, favorites }], {
+  const trpcQuery = trpc.useInfiniteQuery(['gallery.my-items', { limit: 20, favorites }], {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 
@@ -35,9 +35,9 @@ const Gallery: React.FC<GalleryProps> = () => {
   })
 
   const breakpointColumnsObj = {
-    default: 4,
-    1100: 3,
-    700: 2,
+    default: 5,
+    1100: 4,
+    700: 3,
     500: 1,
   }
 
