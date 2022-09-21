@@ -17,7 +17,7 @@ const AdvanceControls: React.FC<AdvanceControlsProps> = ({ values }) => {
       </FormField>
 
       <FormField label="Steps" value={values.steps} hint="How many steps to spend generating your image.">
-        <Field name="steps" type="range" min="30" max="75" step="1" className="range range-sm" />
+        <Field name="steps" type="range" min="30" max="100" step="1" className="range range-sm" />
       </FormField>
 
       <FormField
