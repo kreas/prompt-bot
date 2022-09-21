@@ -10,7 +10,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
     <SideBar>
       <div className="flex gap-4 flex-col w-full h-screen overflow-hidden">
         <NavBar />
-        <main className="flex-1 w-full h-full no-scrollbar">{children}</main>
+        <main className="flex flex-1 w-full h-full no-scrollbar">{children}</main>
       </div>
     </SideBar>
   )
