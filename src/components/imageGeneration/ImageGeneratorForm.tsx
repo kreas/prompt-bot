@@ -1,12 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 import { Field, Form, Formik } from 'formik'
 import { useState } from 'react'
-import axios from 'axios'
 import Image from 'next/image'
-import Timer from 'components/Timer'
 import PromptModal from './PromptModal'
 import AdvanceControls from './AdvanceControls'
 import StandardControls from './StandardControls'
 import FormField from './FormField'
+import { trpc } from 'src/utils/trpc'
+import { Dream, DreamImage } from '@prisma/client'
+import Lottie from 'lottie-react'
+import workingAnimation from '../../animations/working-3.json'
 
 const initialValues = {
   prompt: '',
@@ -21,25 +24,37 @@ const initialValues = {
 
 const ImageGenerationForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [image, setImage] = useState(null)
+  const [jobID, setJobID] = useState<string | null>(null)
+  const [dream, setDream] = useState<(Dream & { dreamImages: DreamImage[] }) | null>(null)
 
-  const longPoll: any = async (jobId: string) => {
-    const resp = await axios.get(`/api/images/${jobId}`)
+  const createImage = trpc.useMutation('dreams.create', {
+    onSuccess: (data: any) => {
+      setIsSubmitting(true)
+      setJobID(data.jobID)
+    },
+  })
 
-    if (resp.data.status === 'pending') {
-      return setTimeout(() => longPoll(jobId), 2000)
-    }
+  const { isLoading } = createImage
 
-    setImage(resp.data[0].image)
-    setIsSubmitting(false)
-  }
+  trpc.useQuery(['dreams.fetch', { id: jobID! }], {
+    enabled: !!jobID && isSubmitting,
+    refetchInterval: 1000,
+    onSuccess: (data: any) => {
+      if (data?.status === 'complete') {
+        setIsSubmitting(false)
+        setDream(data)
+      }
+    },
+  })
+
+  const image = dream?.dreamImages[0]
+  const isWorking = isLoading || isSubmitting
 
   const handleSubmit = async (values: Record<string, string | number>) => {
     if (!Boolean(values?.prompt)) return
-    setIsSubmitting(true)
 
     if (values.interface === 'standard') {
-      switch(values.aspectRation) {
+      switch (values.aspectRation) {
         case '1:1':
           values.width = 512
           values.height = 512
@@ -58,7 +73,7 @@ const ImageGenerationForm: React.FC = () => {
           break
       }
 
-      switch(values.quality) {
+      switch (values.quality) {
         case 'low':
           values.steps = 20
         case 'mid':
@@ -69,25 +84,35 @@ const ImageGenerationForm: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('/api/generate', values)
-      longPoll(response.data.job_id)
+      createImage.mutate(values as any)
     } catch (error) {
       console.error(error)
       setIsSubmitting(false)
     }
   }
 
-
   return (
     <Formik initialValues={initialValues} onSubmit={handleSubmit}>
       {(props) => {
         return (
-          <Form className="flex flex-row flex-1 mr-2 px-4">
-            <section className="flex-1 hidden md:block" style={{ maxWidth: 300 }}>
+          <Form className="flex flex-row flex-1 px-4 gap-4">
+            <section className="hidden md:block" style={{ width: 275 }}>
               <FormField label="Controls" value={false} badge={false} hint="Choose a version of image controls">
                 <div className="btn-group flex">
-                  <Field name="interface" type="radio" data-title="standard" className="btn flex-1 tab tab-lifted" value="standard" />
-                  <Field name="interface" type="radio" data-title="advanced" className="btn flex-1 tab tab-lifted" value="advance" />
+                  <Field
+                    name="interface"
+                    type="radio"
+                    data-title="standard"
+                    className="btn flex-1 tab tab-lifted"
+                    value="standard"
+                  />
+                  <Field
+                    name="interface"
+                    type="radio"
+                    data-title="advanced"
+                    className="btn flex-1 tab tab-lifted"
+                    value="advance"
+                  />
                 </div>
               </FormField>
 
@@ -98,31 +123,21 @@ const ImageGenerationForm: React.FC = () => {
               )}
             </section>
 
-            <section className="flex ml-4 flex-1 form-control align-center">
-              <div className="flex bg-base-200 rounded-xl p-4 justify-center" style={{ height: 'calc(100vh - 160px)' }}>
-                {image ? (
-                  <div className="drop-shadow-md p-4 bg-neutral-focus rounded-md">
-                    {isSubmitting && (
-                      <div
-                        className="flex flex-col justify-center align-middle absolute w-full h-full top-0 left-0 rounded-md text-3xl text-shadow-lg "
-                        style={{ backdropFilter: 'blur(10px)' }}
-                      >
-                        <Timer show={true} />
-                      </div>
-                    )}
-                    {image && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={image} className="rounded-md md:h-full" alt={props.values.prompt} />
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex-1 justify-center align-middle">
-                    <Timer show={isSubmitting} />
+            <section className="flex flex-col flex-1">
+              <div className="flex flex-1 bg-base-200 rounded-xl p-4 justify-center relative" style={{ maxHeight: 'calc(100vh - 160px)' }}>
+                {image && (
+                  <figure className={`flex items-center ${isWorking ? 'blur-sm' : ''}`}>
+                    <img src={image.image} alt={dream.prompt} className="h-full w-auto object-scale-down" />
+                  </figure>
+                )}
+                {isWorking && (
+                  <div className="flex justify-center align-middle w-full h-full z-100 absolute">
+                    <Lottie animationData={workingAnimation} className="w-96 h-96 m-auto" />
                   </div>
                 )}
               </div>
 
-              <div className="input-group mt-4">
+              <div className="input-group mt-4 pb-4">
                 <a className="btn btn-outline border-r-none" href="#prompt-modal">
                   <Image src="/icons/maximize-2.svg" alt="Maximize" width={16} height={16} />
                 </a>
@@ -145,7 +160,7 @@ const ImageGenerationForm: React.FC = () => {
                     />
                   )}
                 </Field>
-                <button className="btn btn-accent btn-bordered" type="submit" disabled={isSubmitting}>
+                <button className="btn btn-accent btn-bordered" type="submit" disabled={isWorking}>
                   go
                 </button>
               </div>
