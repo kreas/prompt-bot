@@ -7,7 +7,7 @@ import AdvanceControls from './AdvanceControls'
 import StandardControls from './StandardControls'
 import FormField from './FormField'
 import { trpc } from 'src/utils/trpc'
-import { Dream, DreamImage } from '@prisma/client'
+import { Dream, DreamImage, UpscaledDream } from '@prisma/client'
 import Lottie from 'lottie-react'
 import workingAnimation from '../../animations/working-3.json'
 
@@ -26,6 +26,8 @@ const ImageGenerationForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [jobID, setJobID] = useState<string | null>(null)
   const [dream, setDream] = useState<(Dream & { dreamImages: DreamImage[] }) | null>(null)
+  const [favorite, setIsFavorite] = useState(false)
+  const [upscaleID, setUpscaleID] = useState<string | null>(null)
 
   const createImage = trpc.useMutation('dreams.create', {
     onSuccess: (data: any) => {
@@ -34,24 +36,55 @@ const ImageGenerationForm: React.FC = () => {
     },
   })
 
-  const { isLoading } = createImage
+  const favoriteImage = trpc.useMutation('gallery.toggle-favorite', {
+    onSuccess: () => setIsFavorite(!favorite),
+  })
 
-  trpc.useQuery(['dreams.fetch', { id: jobID! }], {
+  const upscaleImage = trpc.useMutation('dreams.upscale', {
+    onSuccess: (data: any) => setUpscaleID(data.jobID)
+  })
+
+  const fetchImage = trpc.useQuery(['dreams.fetch', { id: jobID! }], {
     enabled: !!jobID && isSubmitting,
     refetchInterval: 1000,
     onSuccess: (data: any) => {
       if (data?.status === 'complete') {
         setIsSubmitting(false)
         setDream(data)
+        setUpscaleID(null)
       }
     },
   })
 
-  const image = dream?.dreamImages[0]
-  const isWorking = isLoading || isSubmitting
+  trpc.useQuery(['dreams.upscaleStatus', { id: upscaleID! }], {
+    enabled: !!upscaleID,
+    refetchInterval: 1000,
+    onSuccess: (data: any) => {
+      if (data.status === 'complete') {
+        setUpscaleID(null)
+        fetchImage.refetch()
+      }
+    }
+  })
+
+  const extractImageFromDream = () => {
+    const record = dream?.dreamImages[0] as DreamImage & { upscaledDream: UpscaledDream | null}
+    if (!record) return null
+
+    if (record.upscaledDream) {
+      record.image = record.upscaledDream.upscaledImageURL as string
+    }
+
+    return record
+  }
+
+  const image = extractImageFromDream()
+
+  const isWorking = createImage.isLoading || isSubmitting || !!upscaleID
 
   const handleSubmit = async (values: Record<string, string | number>) => {
     if (!Boolean(values?.prompt)) return
+    setIsFavorite(false)
 
     if (values.interface === 'standard') {
       switch (values.aspectRation) {
@@ -124,12 +157,53 @@ const ImageGenerationForm: React.FC = () => {
             </section>
 
             <section className="flex flex-col flex-1">
-              <div className="flex flex-1 bg-base-200 rounded-xl p-4 justify-center relative" style={{ maxHeight: 'calc(100vh - 160px)' }}>
+              <div
+                className="flex flex-1 bg-base-200 rounded-lg p-4 justify-center relative"
+                style={{ maxHeight: 'calc(100vh - 160px)' }}
+              >
                 {image && (
-                  <figure className={`flex items-center ${isWorking ? 'blur-sm' : ''}`}>
-                    <img src={image.image} alt={dream.prompt} className="h-full w-auto object-scale-down" />
-                  </figure>
+                  <>
+                    {!isWorking && (
+                      <div
+                        className="absolute top-4 right-4 bg-base-200 z-10 p-4 rounded rounded-lg opacity-30 hover:opacity-100 flex flex-col"
+                        style={{ background: 'rgba(255,255,255,0.1)' }}
+                      >
+                        <div className="tooltip tooltip-left" data-tip={favorite ? 'unfavorite' : 'favorite'}>
+                          <button
+                            type="button"
+                            title="favorite"
+                            onClick={() => favoriteImage.mutate({ imageId: image.id })}
+                          >
+                            <Image
+                              src={favorite ? '/icons/heart-full.svg' : '/icons/heart-empty.svg'}
+                              width={24}
+                              height={24}
+                              alt="favorite"
+                            />
+                          </button>
+                        </div>
+
+                        {!image.upscaledDream && (
+                          <div className="tooltip tooltip-left" data-tip="upscale">
+                            <button
+                              type="button"
+                              className="block mt-4"
+                              title="upscale"
+                              onClick={() => upscaleImage.mutate({ imageId: image.id })}
+                            >
+                              <Image src="/icons/chevrons-up.svg" width={24} height={24} alt="download" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <figure className={`flex items-center ${isWorking ? 'blur-sm' : ''}`}>
+                      <img src={image.image} alt={dream?.prompt} className="h-full w-auto object-scale-down" />
+                    </figure>
+                  </>
                 )}
+
                 {isWorking && (
                   <div className="flex justify-center align-middle w-full h-full z-100 absolute">
                     <Lottie animationData={workingAnimation} className="w-96 h-96 m-auto" />
