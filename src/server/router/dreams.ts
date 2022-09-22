@@ -18,7 +18,11 @@ const dreamRouter = createProtectedRouter()
           userId: ctx.session.user.id,
         },
         include: {
-          dreamImages: true,
+          dreamImages: {
+            include: {
+              upscaledDream: true
+            }
+          },
         }
       })
     },

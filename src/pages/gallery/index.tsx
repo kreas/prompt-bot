@@ -21,7 +21,7 @@ const Gallery: React.FC<GalleryProps> = () => {
   const [favorites, setFavorites] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-  const trpcQuery = trpc.useInfiniteQuery(['gallery.my-items', { limit: 20, favorites }], {
+  const trpcQuery = trpc.useInfiniteQuery(['gallery.my-items', { limit: 30, favorites }], {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 
@@ -58,10 +58,10 @@ const Gallery: React.FC<GalleryProps> = () => {
         </div>
 
         <section id="gallery no-scrollbar" style={{ overflowY: 'scroll' }}>
-          <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 px-4" style={{ margin: 0 }}>
+          <Masonry breakpointCols={breakpointColumnsObj} className="masonry-grid flex gap-4 px-4 pb-8" style={{ margin: 0 }}>
             {images.map((image) => image && <Card image={image} selectImage={setSelectedImage} key={image?.id} />)}
           </Masonry>
-          <div id="scroll-end" className='mb-28' ref={loadMoreRef} />
+          <div id="scroll-end" className='relative' ref={loadMoreRef} style={{ top: hasNextPage ? -1000 : 0 }} />
         </section>
 
         {!hasNextPage && (

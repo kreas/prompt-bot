@@ -45,6 +45,7 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
           height={24}
           className="absolute z-10 top-2 right-2 opacity-30 hover:opacity-100"
           alt="favorite"
+          placeholder="empty"
         />
       </button>
       <div className="card-body p-4">
