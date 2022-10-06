@@ -7,7 +7,7 @@ const NavBar: React.FC = () => {
 
   return (
     <>
-      <div className="navbar bg-base-300 drop-shadow-lg" style={{ zIndex: 10_000 }}>
+      <div className="navbar bg-base-200 drop-shadow-lg" style={{ zIndex: 10_000 }}>
         <div className="navbar-start">
           <label htmlFor="sidebar" className="btn btn-square btn-ghost">
             <svg
@@ -19,11 +19,6 @@ const NavBar: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </label>
-        </div>
-        <div className="navbar-center hidden md:inline-flex">
-          <Link href="/">
-            <a className="btn btn-ghost normal-case text-xl">scrollrack</a>
-          </Link>
         </div>
         <div className="navbar-end hidden md:inline-flex">
           <ul className=''>
