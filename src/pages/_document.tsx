@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from 'next/document'
 
 export default function Document() {
   return (
-    <Html lang="en" data-theme="dark">
+    <Html lang="en" data-theme="black">
       <Head>
         <meta name="description" content="AI powered asset generator for Magic The Gathering" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
