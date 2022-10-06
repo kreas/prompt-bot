@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import { trpc } from 'src/utils/trpc'
-import { truncate } from 'src/utils/truncate'
 import CopyPrompt from '../CopyPrompt'
 
 export interface DreamObj {

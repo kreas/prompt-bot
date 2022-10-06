@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Field, Form, Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import { useContext, useEffect, useRef } from 'react'
 import StandardControls from './StandardControls'
 import { CanvasContext } from 'contexts/CanvasContext'
