@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Field, Form, Formik } from 'formik'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import PromptModal from './PromptModal'
 import StandardControls from './StandardControls'
@@ -23,6 +23,7 @@ const ImageGenerationForm: React.FC = () => {
   const [favorite, setIsFavorite] = useState(false)
   const [upscaleID, setUpscaleID] = useState<string | null>(null)
   const [seedLocked, setSeedLocked] = useState(false)
+  const setFieldValue = useRef<any>(null)
 
   const createImage = trpc.useMutation('dreams.create', {
     onSuccess: (data: any) => {
@@ -90,9 +91,18 @@ const ImageGenerationForm: React.FC = () => {
     }
   }
 
+  useEffect(() => {
+    if (dream?.dreamImages[0]) {
+      const seed = dream.dreamImages[0].seed
+      setFieldValue.current('seed', seed)
+    }
+  }, [dream])
+
   return (
     <Formik initialValues={initialValues} onSubmit={handleSubmit}>
       {(props) => {
+        setFieldValue.current = props.setFieldValue
+
         return (
           <Form className="flex flex-row flex-1 px-4 gap-4">
             <section className="hidden md:block" style={{ width: 275 }}>
