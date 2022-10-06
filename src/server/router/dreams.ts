@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { createProtectedRouter } from './protected-router'
 import { prisma } from '../db/client'
 import axios from 'axios'
+import { aspectToPixels, qualityToSteps } from 'src/utils/translateDreamParameters'
 
 const default_scale = 4
 
@@ -30,13 +31,26 @@ const dreamRouter = createProtectedRouter()
   .mutation('create', {
     input: z.object({
       prompt: z.string(),
-      height: z.number().min(448).max(768).step(64).default(512),
-      width: z.number().min(448).max(768).step(64).default(512),
-      steps: z.number().min(30).max(100).default(50),
+      aspectRatio: z.enum(['1:1', '2:3', '3:2', '16:9']).default('1:1'),
+      quality: z.enum(['low', 'mid', 'high', 'max']).default('mid'),
       seed: z.number().min(0).default(0),
     }),
     async resolve({ ctx, input }) {
-      const response = await axios.post(process.env.DREAMER_URL || '', input, {
+      const  { width, height } = aspectToPixels(input.aspectRatio)
+      const steps = qualityToSteps(input.quality)
+
+      const payload = {
+        prompt: input.prompt,
+        width,
+        height,
+        steps,
+        seed: input.seed,
+      }
+
+      console.log({ payload });
+
+
+      const response = await axios.post(process.env.DREAMER_URL || '', payload, {
         headers: {
           'Content-Type': 'application/json',
           'X-API-KEY': process.env.DREAMER_API_KEY || '',
@@ -47,10 +61,10 @@ const dreamRouter = createProtectedRouter()
       await prisma.dream.create({
         data: {
           id: response.data.job_id,
-          height: input.height,
-          width: input.width,
+          height: height,
+          width: width,
           seed: input.seed,
-          steps: input.steps,
+          steps: steps,
           prompt: input.prompt,
           userId: ctx.session.user.id,
         }

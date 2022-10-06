@@ -32,7 +32,7 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
   }
 
   return (
-    <div className="card bg-neutral shadow-xl w-full aspect-photo mb-5">
+    <div className="card bg-base-300 shadow-xl w-full aspect-photo mb-5 rounded rounded-xl">
       <figure>
         <a href='#preview' onClick={() => selectImage(image.id)}>
           <Image src={image?.image} alt="image.prompt" key={image?.id} width={image?.width} height={image?.height} />
@@ -48,9 +48,8 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
           placeholder="empty"
         />
       </button>
-      <div className="card-body p-4">
-        <p className="text-sm">{truncate(image?.prompt, 200)}</p>
-        <div className="bg-base-200 rounded-lg p-2">
+      <div className="card-body p-2">
+        <div className="bg-base-100 rounded-lg p-2">
           <div className="dropdown dropdown-top dropdown-end flex">
             <div className="flex-1 flex text-sm items-center">
               <Image src={image?.user?.image} alt="user" width={24} height={24} className="mask mask-circle" />
@@ -62,7 +61,7 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
             <div>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu p-2 shadow-md bg-base-100 rounded-box w-52 mb-1 text-sm"
+                className="dropdown-content menu p-2 shadow-md bg-base-300 rounded-box w-52 mb-1 text-sm"
               >
                 <li>
                   <CopyPrompt prompt={image?.prompt} className={''} />
