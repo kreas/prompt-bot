@@ -34,21 +34,20 @@ const dreamRouter = createProtectedRouter()
       aspectRatio: z.enum(['1:1', '2:3', '3:2', '16:9']).default('1:1'),
       quality: z.enum(['low', 'mid', 'high', 'max']).default('mid'),
       seed: z.number().min(0).default(0),
+      seedLocked: z.boolean().default(false),
     }),
     async resolve({ ctx, input }) {
       const  { width, height } = aspectToPixels(input.aspectRatio)
       const steps = qualityToSteps(input.quality)
+      const seed = input.seedLocked ? input.seed : Math.floor(Math.random() * 1_000_000)
 
       const payload = {
         prompt: input.prompt,
         width,
         height,
         steps,
-        seed: input.seed,
+        seed,
       }
-
-      console.log({ payload });
-
 
       const response = await axios.post(process.env.DREAMER_URL || '', payload, {
         headers: {

@@ -3,6 +3,7 @@ import { Session, unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
 import ImageGenerationForm from 'components/imageGeneration/ImageGeneratorForm'
 import type { GetServerSideProps, NextPage } from 'next'
+import { CanvasContextProvider } from 'contexts/CanvasContext'
 
 const Home: NextPage<Session> = () => {
   return (
@@ -11,7 +12,9 @@ const Home: NextPage<Session> = () => {
           <title>Scrollrack | Dreamer</title>
       </Head>
 
-      <ImageGenerationForm />
+      <CanvasContextProvider>
+        <ImageGenerationForm />
+      </CanvasContextProvider>
     </>
   )
 }
