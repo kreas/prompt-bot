@@ -4,7 +4,7 @@ import { prisma } from '../db/client'
 import axios from 'axios'
 import { aspectToPixels, qualityToSteps } from 'src/utils/translateDreamParameters'
 
-const default_scale = 4
+const DEFAULT_SCALE = 2
 
 // Example router with queries that can only be hit if the user requesting is signed in
 const dreamRouter = createProtectedRouter()
@@ -93,7 +93,7 @@ const dreamRouter = createProtectedRouter()
 
       const response = await axios.post(process.env.DREAMER_URL + '/upscale', {
         image_url: dreamImage.image,
-        scale: default_scale,
+        scale: DEFAULT_SCALE,
       }, {
         headers: {
           'X-API-KEY': process.env.DREAMER_API_KEY || '',
@@ -112,12 +112,12 @@ const dreamRouter = createProtectedRouter()
           update: {
             id: response.data.job_id as string,
             dreamImageId: input.imageId,
-            scale: default_scale,
+            scale: DEFAULT_SCALE,
           },
           create: {
             id: response.data.job_id as string,
             dreamImageId: input.imageId,
-            scale: default_scale,
+            scale: DEFAULT_SCALE,
           }
         })
 
