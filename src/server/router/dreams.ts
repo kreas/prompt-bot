@@ -60,8 +60,8 @@ const dreamRouter = createProtectedRouter()
       await prisma.dream.create({
         data: {
           id: response.data.job_id,
-          height: height,
-          width: width,
+          height: height * 2,
+          width: width & 2,
           seed: input.seed,
           steps: steps,
           prompt: input.prompt,
