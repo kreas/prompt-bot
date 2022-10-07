@@ -14,9 +14,7 @@ const SideBar: React.FC<SideBarProps> = ({ children }) => {
         <label htmlFor="sidebar" className="drawer-overlay"></label>
         <div className="menu menu-compact p-4 overflow-y-auto w-80 bg-base-100 text-base-content">
           <div className="mb-4 w-48 ml-4 mt-2">
-            <Link href="/">
-              <Image src="/logo.webp" height={122} width={500} alt="scrollrack" />
-            </Link>
+            <Image unoptimized={true} src="/logo.webp" height={122} width={500} alt="scrollrack" />
           </div>
 
           <ul>

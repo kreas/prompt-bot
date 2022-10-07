@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { useState } from 'react'
+import { cloudflareLoader } from 'src/utils/cloudflareImageLoader'
 import { trpc } from 'src/utils/trpc'
 import CopyPrompt from '../CopyPrompt'
 
@@ -33,12 +34,21 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
   return (
     <div className="card bg-base-300 shadow-xl w-full aspect-photo mb-5 rounded rounded-xl">
       <figure>
-        <a href='#preview' onClick={() => selectImage(image.id)}>
-          <Image src={image?.image} alt="image.prompt" key={image?.id} width={image?.width} height={image?.height} />
+        <a href="#preview" onClick={() => selectImage(image.id)}>
+          <Image
+            loader={cloudflareLoader}
+            src={image?.image}
+            alt="image.prompt"
+            key={image?.id}
+            width={image?.width / 0.76 }
+            height={image?.height / 0.76 }
+            quality={50}
+          />
         </a>
       </figure>
       <button className="absolute z-10 bg-transparent right-3 top-3" onClick={handleFavorite}>
         <Image
+          unoptimized={true}
           src={isFavorite ? '/icons/heart-full.svg' : '/icons/heart-empty.svg'}
           width={24}
           height={24}
@@ -51,11 +61,18 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
         <div className="bg-base-100 rounded-lg p-2">
           <div className="dropdown dropdown-top dropdown-end flex">
             <div className="flex-1 flex text-sm items-center">
-              <Image src={image?.user?.image} alt="user" width={24} height={24} className="mask mask-circle" />
+              <Image
+                unoptimized={true}
+                src={image?.user?.image}
+                alt="user"
+                width={24}
+                height={24}
+                className="mask mask-circle"
+              />
               <span className="ml-2">{image?.user.name}</span>
             </div>
             <label tabIndex={0} className="btn btn-ghost btn-sm text-sm w-11">
-              <Image src="/icons/more-vertical.svg" alt="share" width={24} height={24} />
+              <Image unoptimized={true} src="/icons/more-vertical.svg" alt="share" width={24} height={24} />
             </label>
             <div>
               <ul

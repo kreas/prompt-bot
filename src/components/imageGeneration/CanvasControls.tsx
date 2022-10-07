@@ -15,6 +15,7 @@ const CanvasControls: React.FC = () => {
       <div className="tooltip tooltip-left" data-tip={favorite ? 'unfavorite' : 'favorite'}>
         <button type="button" title="favorite" onClick={() => favoriteImage.mutate({ imageId: image.id })}>
           <Image
+            unoptimized={true}
             src={favorite ? '/icons/heart-full.svg' : '/icons/heart-empty.svg'}
             width={24}
             height={24}
@@ -31,7 +32,7 @@ const CanvasControls: React.FC = () => {
             title="upscale"
             onClick={() => upscaleImage.mutate({ imageId: image.id })}
           >
-            <Image src="/icons/chevrons-up.svg" width={24} height={24} alt="download" />
+            <Image unoptimized={true} src="/icons/chevrons-up.svg" width={24} height={24} alt="download" />
           </button>
         </div>
       )}

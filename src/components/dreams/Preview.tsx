@@ -6,6 +6,7 @@ import Lottie from 'lottie-react'
 import spinner from '../../animations/spinner.json'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
+import { cloudflareLoader } from 'src/utils/cloudflareImageLoader'
 
 type PreviewImage = {
   id: string
@@ -94,6 +95,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
         <section id={`dream-${image.id}`} className="h-full hidden lg:flex">
           <figure className="w-full max-h-full relative">
             <Image
+              loader={cloudflareLoader}
               src={image.url}
               width={image.dream.width}
               height={image.dream.height}
@@ -106,7 +108,14 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
 
         <section id={`dream-${image.id}`} className="flex lg:hidden">
           <figure className="w-full max-h-full">
-            <Image src={image.url} width={image.width} height={image.height} alt={image.prompt} layout="responsive" />
+            <Image
+              loader={cloudflareLoader}
+              src={image.url}
+              width={image.width}
+              height={image.height}
+              alt={image.prompt}
+              layout="responsive"
+            />
           </figure>
         </section>
 
@@ -115,11 +124,8 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
             className="block w-24 m-auto mb-4 relative bg-white text-center opacity-40 hover:opacity-100 rounded rounded-lg px-4 py-2 text-xs flex gap-5 justify-center"
             style={{ top: -50 }}
           >
-            <a
-              href={`/gallery/${image.id}`}
-              className="opacity-50 hover:opacity-100 transition"
-            >
-              <Image src="/icons/link-black.svg" width={20} height={20} alt="Direct Link" layout="fixed" />
+            <a href={`/gallery/${image.id}`} className="opacity-50 hover:opacity-100 transition">
+              <Image unoptimized={true} src="/icons/link-black.svg" width={20} height={20} alt="Direct Link" layout="fixed" />
             </a>
 
             <a
@@ -129,6 +135,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
               className="opacity-50 hover:opacity-100 transition"
             >
               <Image
+                unoptimized={true}
                 src="/icons/maximize-2-black.svg"
                 width={20}
                 height={20}
@@ -143,6 +150,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
       <section className="lg:w-96 lg:pl-4 flex flex-col">
         <div className="bg-base-200 rounded rounded-xl p-2 items-center flex mt-2 lg:mt-0">
           <Image
+            unoptimized={true}
             src={image.user.image || 'unknown'}
             width={35}
             height={35}
@@ -172,7 +180,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
                   className="btn btn-sm btn-ghost px-2"
                   onClick={() => navigator.clipboard.writeText(`${image.seed}`)}
                 >
-                  <Image src="/icons/clipboard.svg" width={14} height={14} alt="Copy" />
+                  <Image unoptimized={true} src="/icons/clipboard.svg" width={14} height={14} alt="Copy" />
                 </button>
               </div>
             </div>
