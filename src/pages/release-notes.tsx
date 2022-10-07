@@ -3,7 +3,7 @@ import { NotionRenderer } from 'react-notion-x'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const ReleaseNotesPage = ({ page }) => {
+const ReleaseNotesPage = ({ page }: any) => {
   return (
     <div className="overflow-y-auto p-4 w-full">
       <NotionRenderer

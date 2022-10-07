@@ -6,6 +6,7 @@ import Lottie from 'lottie-react'
 import spinner from '../../animations/spinner.json'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
+import { cloudflareLoader } from 'src/utils/cloudflareImageLoader'
 
 type PreviewImage = {
   id: string
@@ -94,7 +95,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
         <section id={`dream-${image.id}`} className="h-full hidden lg:flex">
           <figure className="w-full max-h-full relative">
             <Image
-              unoptimized={true}
+              loader={cloudflareLoader}
               src={image.url}
               width={image.dream.width}
               height={image.dream.height}
@@ -108,7 +109,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
         <section id={`dream-${image.id}`} className="flex lg:hidden">
           <figure className="w-full max-h-full">
             <Image
-              unoptimized={true}
+              loader={cloudflareLoader}
               src={image.url}
               width={image.width}
               height={image.height}

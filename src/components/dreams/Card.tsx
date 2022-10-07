@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { useState } from 'react'
+import { cloudflareLoader } from 'src/utils/cloudflareImageLoader'
 import { trpc } from 'src/utils/trpc'
 import CopyPrompt from '../CopyPrompt'
 
@@ -35,12 +36,13 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
       <figure>
         <a href="#preview" onClick={() => selectImage(image.id)}>
           <Image
-            unoptimized={true}
+            loader={cloudflareLoader}
             src={image?.image}
             alt="image.prompt"
             key={image?.id}
-            width={image?.width}
-            height={image?.height}
+            width={image?.width / 0.76 }
+            height={image?.height / 0.76 }
+            quality={50}
           />
         </a>
       </figure>

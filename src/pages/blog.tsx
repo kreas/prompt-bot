@@ -4,7 +4,7 @@ import { Collection } from 'react-notion-x/build/third-party/collection'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const BlogIndexPage = ({ page }) => {
+const BlogIndexPage = ({ page }: { page: any }) => {
   return (
     <div className="overflow-y-auto p-4 w-full">
       <NotionRenderer
