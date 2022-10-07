@@ -14,7 +14,7 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
-        <script defer data-domain="scrollrack.quest" src="https://plausible.io/js/plausible.js"></script>
+        <script defer data-domain="app.scrollrack.quest" src="https://plausible.io/js/plausible.js"></script>
       </body>
     </Html>
   )
