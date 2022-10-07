@@ -1,18 +1,21 @@
 import { NotionAPI } from 'notion-client'
 import { NotionRenderer } from 'react-notion-x'
+import { Collection } from 'react-notion-x/build/third-party/collection'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const ReleaseNotesPage = ({ page }) => {
+const BlogIndexPage = ({ page }) => {
   return (
     <div className="overflow-y-auto p-4 w-full">
       <NotionRenderer
         recordMap={page}
         fullPage={false}
         darkMode={true}
+        mapPageUrl={(pageId) => `/blog/${pageId}`}
         components={{
           nextImage: Image,
           nextLink: Link,
+          Collection,
         }}
       />
     </div>
@@ -21,7 +24,7 @@ const ReleaseNotesPage = ({ page }) => {
 
 export const getServerSideProps = async () => {
   const api = new NotionAPI()
-  const page = await api.getPage('304affb58aaa431398d78d4ccd708315')
+  const page = await api.getPage('b2600f7333cb475796d404669a8a28d8')
 
   return {
     props: {
@@ -30,4 +33,4 @@ export const getServerSideProps = async () => {
   }
 }
 
-export default ReleaseNotesPage
+export default BlogIndexPage
