@@ -26,6 +26,7 @@ export default defineNextConfig({
       'cdn.discordapp.com',
       'scrollrack-image-generator.s3.us-east-2.amazonaws.com',
       'dreamstorage.kreas.workers.dev',
+      'images.scrollrack.quest'
     ],
   },
 })
