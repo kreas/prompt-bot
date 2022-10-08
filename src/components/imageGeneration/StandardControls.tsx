@@ -46,9 +46,9 @@ const StandardControls: React.FC<StandardControlsProps> = ({ values }) => {
             <Field name="seed" type="number" className="input w-full bg-neutral" disabled={seedLocked} />
             <button className="btn btn-square btn-outline btn-primary" type='button' onClick={() => setSeedLocked(!seedLocked)}>
               {seedLocked ? (
-                <Image unoptimized={true} src="/icons/lock.svg" width={16} height={16} alt="Locked" />
+                <Image unoptimized src="/icons/lock.svg" width={16} height={16} alt="Locked" />
               ) : (
-                <Image unoptimized={true} src="/icons/unlock.svg" width={16} height={16} alt="Unlocked" />
+                <Image unoptimized src="/icons/unlock.svg" width={16} height={16} alt="Unlocked" />
               )}
             </button>
           </div>

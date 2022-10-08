@@ -125,7 +125,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
             style={{ top: -50 }}
           >
             <a href={`/gallery/${image.id}`} className="opacity-50 hover:opacity-100 transition">
-              <Image unoptimized={true} src="/icons/link-black.svg" width={20} height={20} alt="Direct Link" layout="fixed" />
+              <Image unoptimized src="/icons/link-black.svg" width={20} height={20} alt="Direct Link" layout="fixed" />
             </a>
 
             <a
@@ -135,7 +135,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
               className="opacity-50 hover:opacity-100 transition"
             >
               <Image
-                unoptimized={true}
+                unoptimized
                 src="/icons/maximize-2-black.svg"
                 width={20}
                 height={20}
@@ -150,7 +150,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
       <section className="lg:w-96 lg:pl-4 flex flex-col">
         <div className="bg-base-200 rounded rounded-xl p-2 items-center flex mt-2 lg:mt-0">
           <Image
-            unoptimized={true}
+            unoptimized
             src={image.user.image || 'unknown'}
             width={35}
             height={35}
@@ -180,7 +180,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
                   className="btn btn-sm btn-ghost px-2"
                   onClick={() => navigator.clipboard.writeText(`${image.seed}`)}
                 >
-                  <Image unoptimized={true} src="/icons/clipboard.svg" width={14} height={14} alt="Copy" />
+                  <Image unoptimized src="/icons/clipboard.svg" width={14} height={14} alt="Copy" />
                 </button>
               </div>
             </div>

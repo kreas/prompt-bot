@@ -48,7 +48,7 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
       </figure>
       <button className="absolute z-10 bg-transparent right-3 top-3" onClick={handleFavorite}>
         <Image
-          unoptimized={true}
+          unoptimized
           src={isFavorite ? '/icons/heart-full.svg' : '/icons/heart-empty.svg'}
           width={24}
           height={24}
@@ -62,7 +62,7 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
           <div className="dropdown dropdown-top dropdown-end flex">
             <div className="flex-1 flex text-sm items-center">
               <Image
-                unoptimized={true}
+                unoptimized
                 src={image?.user?.image}
                 alt="user"
                 width={24}
@@ -72,7 +72,7 @@ const ImageCard: React.FC<DreamCardProps> = ({ image, selectImage }) => {
               <span className="ml-2">{image?.user.name}</span>
             </div>
             <label tabIndex={0} className="btn btn-ghost btn-sm text-sm w-11">
-              <Image unoptimized={true} src="/icons/more-vertical.svg" alt="share" width={24} height={24} />
+              <Image unoptimized src="/icons/more-vertical.svg" alt="share" width={24} height={24} />
             </label>
             <div>
               <ul

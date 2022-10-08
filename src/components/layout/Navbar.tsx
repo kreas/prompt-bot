@@ -28,7 +28,7 @@ const NavBar: React.FC = () => {
                   <div className="avatar">
                     <div className="w-10 rounded-full">
                       <Image
-                        unoptimized={true}
+                        unoptimized
                         src={session?.user?.image as string}
                         width={150}
                         height={150}
