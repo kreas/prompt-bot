@@ -23,7 +23,7 @@ const Review = ({ onUse: handleSetPrompt, onSubmit: handleSubmit }: ReviewProps)
 
   useEffect(() => {
     setValue(result)
-  }, [step])
+  }, [step, result])
 
   return (
     <Show when={step === Steps.Review}>
@@ -32,7 +32,7 @@ const Review = ({ onUse: handleSetPrompt, onSubmit: handleSubmit }: ReviewProps)
 
         <div className="flex justify-between mt-4 gap-4">
           <button className="btn btn-outline opacity-60 hover:opacity-100" type="button" onClick={() => setStep(Steps.Subject)}>Previous</button>
-          <button onClick={handleNext} className="btn btn-success">Let's Go</button>
+          <button onClick={handleNext} className="btn btn-success">Go</button>
         </div>
       </>
     </Show>

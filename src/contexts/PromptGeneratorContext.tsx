@@ -1,6 +1,6 @@
 import data from 'src/data/output.json'
 
-import { createContext, ReactElement, useEffect, useState } from "react"
+import { createContext, ReactElement, useState } from "react"
 
 export enum Steps {
   Subject,

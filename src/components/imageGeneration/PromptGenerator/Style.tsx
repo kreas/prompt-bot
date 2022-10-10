@@ -35,7 +35,3 @@ const Style = () => {
 }
 
 export default Style
-
-function setStep(Subject: Steps): void {
-  throw new Error("Function not implemented.")
-}
