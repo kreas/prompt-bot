@@ -1,4 +1,4 @@
-import { CanvasContext } from 'contexts/CanvasContext'
+import { CanvasContext } from 'src/contexts/CanvasContext'
 import Image from 'next/image'
 import { useContext } from 'react'
 

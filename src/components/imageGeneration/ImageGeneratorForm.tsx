@@ -2,10 +2,11 @@
 import { Form, Formik } from 'formik'
 import { useContext, useEffect, useRef } from 'react'
 import StandardControls from './StandardControls'
-import { CanvasContext } from 'contexts/CanvasContext'
+import { CanvasContext } from 'src/contexts/CanvasContext'
 import CanvasControls from './CanvasControls'
 import WorkingIndicator from './WorkingIndicator'
 import PromptBar from './PromptBar'
+import PromptGenerator from './PromptGenerator'
 
 const initialValues = {
   prompt: '',
@@ -38,38 +39,43 @@ const ImageGenerationForm: React.FC = () => {
   }, [dream])
 
   return (
-    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-      {({ values, setFieldValue, submitForm }) => {
-        updateFieldValue.current = setFieldValue
+    <>
+      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+        {({ values, setFieldValue, submitForm }) => {
+          updateFieldValue.current = setFieldValue
 
-        return (
-          <Form className="flex flex-row flex-1 px-4 gap-4">
-            <StandardControls values={values} />
+          return (
+            <>
+              <Form className="flex flex-row flex-1 px-4 gap-4">
+                <StandardControls values={values} />
 
-            <section className="flex flex-col flex-1">
-              <div
-                className="flex flex-1 bg-base-200 rounded-lg p-4 justify-center relative"
-                style={{ maxHeight: 'calc(100vh - 160px)' }}
-              >
-                {image && (
-                  <>
-                    <CanvasControls />
-                    <figure className={`flex items-center ${isWorking ? 'blur-sm' : ''}`}>
-                      <img src={image.image} alt={dream?.prompt} className="h-full w-auto object-scale-down" />
-                    </figure>
-                  </>
-                )}
+                <section className="flex flex-col flex-1">
+                  <div
+                    className="flex flex-1 bg-base-200 rounded-lg p-4 justify-center relative"
+                    style={{ maxHeight: 'calc(100vh - 160px)' }}
+                  >
+                    {image && (
+                      <>
+                        <CanvasControls />
+                        <figure className={`flex items-center ${isWorking ? 'blur-sm' : ''}`}>
+                          <img src={image.image} alt={dream?.prompt} className="h-full w-auto object-scale-down" />
+                        </figure>
+                      </>
+                    )}
 
-                <WorkingIndicator />
-              </div>
+                    <WorkingIndicator />
+                  </div>
 
-              <PromptBar submitForm={submitForm} className="mt-4 pb-4" />
+                  <PromptBar submitForm={submitForm} className="mt-4 pb-4" />
 
-            </section>
-          </Form>
-        )
-      }}
-    </Formik>
+                </section>
+              </Form>
+              <PromptGenerator onUse={setFieldValue} onSubmit={submitForm} />
+            </>
+          )
+        }}
+      </Formik>
+    </>
   )
 }
 

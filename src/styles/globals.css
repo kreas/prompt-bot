@@ -40,3 +40,23 @@ body {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+.breadcrumbs li {
+  margin-right: 0.5rem;
+  opacity: 0.5;
+}
+
+.breadcrumbs li:after {
+  content: ">";
+  margin-left: 0.5rem;
+}
+
+.breadcrumbs li:last-child {
+  margin-right: 0.5rem;
+  opacity: 1;
+}
+
+.breadcrumbs li:last-child:after {
+  content: none;
+  margin-reference: unset;
+}

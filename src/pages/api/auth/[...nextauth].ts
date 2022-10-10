@@ -8,7 +8,7 @@ import { env } from '../../../env/server.mjs'
 
 const updateUserProfile = async (user: User, profile: Profile & Record<string, unknown>) => {
   try {
-    const result = await prisma.user.update({
+    await prisma.user.update({
       where: {
         email: user.email as string
       },

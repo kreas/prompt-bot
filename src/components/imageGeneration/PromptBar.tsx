@@ -1,4 +1,4 @@
-import { CanvasContext } from "contexts/CanvasContext";
+import { CanvasContext } from "src/contexts/CanvasContext";
 import { Field } from "formik";
 import { useContext } from "react";
 
