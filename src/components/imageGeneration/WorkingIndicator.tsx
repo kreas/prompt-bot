@@ -1,4 +1,4 @@
-import { CanvasContext } from "contexts/CanvasContext"
+import { CanvasContext } from "src/contexts/CanvasContext"
 import { useContext } from "react"
 import Lottie from "lottie-react"
 import workingAnimation from '../../animations/working-3.json'

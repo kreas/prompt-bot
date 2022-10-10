@@ -1,8 +1,9 @@
+import { CanvasContext } from 'src/contexts/CanvasContext'
 import { Field } from 'formik'
+import { useContext } from 'react'
 import FormField from './FormField'
 import Image from 'next/image'
-import { useContext } from 'react'
-import { CanvasContext } from 'contexts/CanvasContext'
+
 interface StandardControlsProps {
   values: Record<string, string | number | undefined>
 }
@@ -53,6 +54,12 @@ const StandardControls: React.FC<StandardControlsProps> = ({ values }) => {
             </button>
           </div>
         </FormField>
+
+        <div className="mt-4">
+          <div className="flex-1">Prompt Builder</div>
+          <div className="text-sm opacity-60 mb-2">Use this to help craft an artisinal prompt.</div>
+          <a href="#generator-modal" className="btn btn-primary w-full" type="button">Open</a>
+        </div>
       </div>
     </section>
   )
