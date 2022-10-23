@@ -66,7 +66,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
     onSuccess: () => setIsUpscaling(true),
   })
 
-  trpc.useQuery(['dreams.upscaleStatus', { id: upscaler.data?.jobID }], {
+  trpc.useQuery(['dreams.upscaleStatus', { id: upscaler.data?.jobID as string }], {
     enabled: isUpscaling,
     refetchInterval: 1000,
     onSuccess(data) {
