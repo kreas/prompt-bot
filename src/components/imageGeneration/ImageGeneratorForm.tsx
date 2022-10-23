@@ -16,7 +16,7 @@ const initialValues = {
 }
 
 const ImageGenerationForm: React.FC = () => {
-  const { dream, image, isWorking, createImage, isSubmitting, setIsSubmitting, setIsFavorite, seedLocked } = useContext(CanvasContext)
+  const { dream, image, isWorking, createImage, setIsSubmitting, setIsFavorite, seedLocked } = useContext(CanvasContext)
   const updateFieldValue = useRef<any>(null)
 
   const handleSubmit = async (values: Record<string, string | number>) => {

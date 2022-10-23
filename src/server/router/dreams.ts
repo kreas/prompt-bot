@@ -1,8 +1,9 @@
-import { z } from 'zod'
-import { createProtectedRouter } from './protected-router'
-import { prisma } from '../db/client'
-import axios from 'axios'
 import { aspectToPixels, qualityToSteps } from 'src/utils/translateDreamParameters'
+import { createProtectedRouter } from './protected-router'
+import { initRedisClient } from 'src/utils/redisClient'
+import { prisma } from '../db/client'
+import { randomUUID } from 'crypto'
+import { z } from 'zod'
 
 const DEFAULT_SCALE = 2
 
@@ -37,11 +38,14 @@ const dreamRouter = createProtectedRouter()
       seedLocked: z.boolean().default(false),
     }),
     async resolve({ ctx, input }) {
+      const client = initRedisClient()
       const  { width, height } = aspectToPixels(input.aspectRatio)
       const steps = qualityToSteps(input.quality)
       const seed = input.seedLocked ? input.seed : Math.floor(Math.random() * 1_000_000)
 
       const payload = {
+        webhook_url: process.env.DREAMER_WEBHOOK_URL,
+        job_id: randomUUID(),
         prompt: input.prompt,
         width,
         height,
@@ -49,27 +53,23 @@ const dreamRouter = createProtectedRouter()
         seed,
       }
 
-      const response = await axios.post(process.env.DREAMER_URL || '', payload, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-KEY': process.env.DREAMER_API_KEY || '',
-          'X-WEBHOOK-URL': process.env.DREAMER_WEBHOOK_URL || '',
-        }
-      })
+      await client.rpush('generate_images', JSON.stringify(payload))
 
       await prisma.dream.create({
         data: {
-          id: response.data.job_id,
-          height: height * 2,
-          width: width * 2,
-          seed: input.seed,
-          steps: steps,
-          prompt: input.prompt,
+          id: payload.job_id,
+          height: payload.height * 2,
+          width: payload.width * 2,
+          seed: payload.seed,
+          steps: payload.steps,
+          prompt: payload.prompt,
           userId: ctx.session.user.id,
         }
       })
 
-      return { jobID: response.data.job_id }
+      client.disconnect()
+
+      return { jobID: payload.job_id }
     }
   })
   .mutation('upscale', {
@@ -77,6 +77,7 @@ const dreamRouter = createProtectedRouter()
       imageId: z.string(),
     }),
     async resolve({ ctx, input }) {
+      const client = initRedisClient()
       const dreamImage = await prisma.dreamImage.findFirst({
         where: {
           id: input.imageId,
@@ -91,40 +92,36 @@ const dreamRouter = createProtectedRouter()
 
       if (!dreamImage) return { error: 'Dream image not found' }
 
-      const response = await axios.post(process.env.DREAMER_URL + '/upscale', {
+      const payload = {
+        job_id: randomUUID(),
         image_url: dreamImage.image,
         scale: DEFAULT_SCALE,
-      }, {
-        headers: {
-          'X-API-KEY': process.env.DREAMER_API_KEY || '',
-          'X-WEBHOOK-URL': process.env.UPSCALER_WEBHOOK_URL || '',
-          'Content-Type': 'application/json',
+        webhook_url: process.env.UPSCALER_WEBHOOK_URL,
+      }
+
+      const jobID: string = payload.job_id
+
+      await client.rpush('upscale_images', JSON.stringify(payload))
+
+      await prisma.upscaledDream.upsert({
+        where: {
+          dreamImageId: input.imageId,
+        },
+        update: {
+          id: jobID,
+          dreamImageId: input.imageId,
+          scale: DEFAULT_SCALE,
+        },
+        create: {
+          id: jobID,
+          dreamImageId: input.imageId,
+          scale: DEFAULT_SCALE,
         }
       })
 
-      const { job_id: jobID } = response?.data
+      client.disconnect()
 
-      if (jobID) {
-        await prisma.upscaledDream.upsert({
-          where: {
-            dreamImageId: input.imageId,
-          },
-          update: {
-            id: response.data.job_id as string,
-            dreamImageId: input.imageId,
-            scale: DEFAULT_SCALE,
-          },
-          create: {
-            id: response.data.job_id as string,
-            dreamImageId: input.imageId,
-            scale: DEFAULT_SCALE,
-          }
-        })
-
-        return { jobID }
-      }
-
-      return { error: 'Failed to create job' }
+      return { jobID }
     }
   })
   .query('upscaleStatus', {
