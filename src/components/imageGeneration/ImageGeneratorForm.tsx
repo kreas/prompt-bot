@@ -16,7 +16,7 @@ const initialValues = {
 }
 
 const ImageGenerationForm: React.FC = () => {
-  const { dream, image, isWorking, createImage, setIsSubmitting, setIsFavorite, seedLocked } = useContext(CanvasContext)
+  const { dream, image, isWorking, createImage, isSubmitting, setIsSubmitting, setIsFavorite, seedLocked } = useContext(CanvasContext)
   const updateFieldValue = useRef<any>(null)
 
   const handleSubmit = async (values: Record<string, string | number>) => {
@@ -44,6 +44,10 @@ const ImageGenerationForm: React.FC = () => {
         {({ values, setFieldValue, submitForm }) => {
           updateFieldValue.current = setFieldValue
 
+          const handleGenerate = () => {
+            isWorking || submitForm()
+          }
+
           return (
             <>
               <Form className="flex flex-row flex-1 px-4 gap-4">
@@ -66,7 +70,7 @@ const ImageGenerationForm: React.FC = () => {
                     <WorkingIndicator />
                   </div>
 
-                  <PromptBar submitForm={submitForm} className="mt-4 pb-4" />
+                  <PromptBar submitForm={handleGenerate} className="mt-4 pb-4" />
 
                 </section>
               </Form>
