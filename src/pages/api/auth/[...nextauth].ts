@@ -26,7 +26,9 @@ const updateUserProfile = async (user: User, profile: Profile & Record<string, u
 export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, profile }) {
-      await updateUserProfile(user, profile)
+      if (profile) {
+        await updateUserProfile(user, profile as Profile & Record<string, unknown>)
+      }
       return true
     },
     session({ session, user }) {
