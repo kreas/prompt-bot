@@ -1,6 +1,7 @@
 import { CanvasContext } from 'src/contexts/CanvasContext'
 import Image from 'next/image'
 import { useContext } from 'react'
+import { ControlButton } from './CanvasButton'
 
 const CanvasControls: React.FC = () => {
   const { image, isWorking, favoriteImage, favorite, upscaleImage } = useContext(CanvasContext)
@@ -8,35 +9,37 @@ const CanvasControls: React.FC = () => {
   if (isWorking) return <></>
 
   return (
-    <div
-      className="absolute top-4 right-4 bg-base-200 z-10 p-4 rounded rounded-lg opacity-30 hover:opacity-100 flex flex-col"
-      style={{ background: 'rgba(255,255,255,0.1)' }}
-    >
-      <div className="tooltip tooltip-left" data-tip={favorite ? 'unfavorite' : 'favorite'}>
-        <button type="button" title="favorite" onClick={() => favoriteImage.mutate({ imageId: image.id })}>
+    <>
+      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+        <ControlButton onClick={() => window.open(image.image)} tooltip="Open in new window" tooltipDirection="right">
           <Image
-            unoptimized
+            src='/icons/external-link.svg'
+            width={24}
+            height={24}
+            alt="Open in a new Window"
+          />
+        </ControlButton>
+      </div>
+
+      <div
+        className="absolute top-4 right-4 z-10 flex flex-col gap-2"
+      >
+        <ControlButton onClick={() => favoriteImage.mutate({ imageId: image.id })} tooltip="Toggle favorite">
+          <Image
             src={favorite ? '/icons/heart-full.svg' : '/icons/heart-empty.svg'}
             width={24}
             height={24}
             alt="favorite"
           />
-        </button>
-      </div>
+        </ControlButton>
 
-      {!image.upscaledDream && (
-        <div className="tooltip tooltip-left" data-tip="upscale">
-          <button
-            type="button"
-            className="block mt-4"
-            title="upscale"
-            onClick={() => upscaleImage.mutate({ imageId: image.id })}
-          >
-            <Image unoptimized src="/icons/chevrons-up.svg" width={24} height={24} alt="download" />
-          </button>
-        </div>
-      )}
-    </div>
+        {!image.upscaledDream && (
+          <ControlButton tooltip="Upscale" onClick={() => upscaleImage.mutate({ imageId: image.id })}>
+            <Image unoptimized src="/icons/chevrons-up.svg" width={24} height={24} alt="upscale" />
+          </ControlButton>
+        )}
+      </div>
+    </>
   )
 }
 
