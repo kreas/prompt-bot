@@ -44,5 +44,7 @@ database/
 
 # Sentry
 .sentryclirc
-.turbo/turbo-build.log
-.turbo/turbo-lint.log
+
+
+.turbo/
+.turbo
