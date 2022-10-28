@@ -45,6 +45,4 @@ database/
 # Sentry
 .sentryclirc
 
-
-.turbo/
 .turbo

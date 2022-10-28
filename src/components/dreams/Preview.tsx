@@ -7,6 +7,7 @@ import spinner from '../../animations/spinner.json'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { cloudflareLoader } from 'src/utils/cloudflareImageLoader'
+import { ControlLink } from '../controls/ControlLink'
 
 type PreviewImage = {
   id: string
@@ -52,7 +53,6 @@ const formatImageData = (data: ImageData): PreviewImage => {
 const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
   const { data: session } = useSession()
   const [isUpscaling, setIsUpscaling] = useState(false)
-  const [showActions, setShowActions] = useState(false)
   const [image, setImage] = useState<PreviewImage | null>(null)
 
   const imageQuery = trpc.useQuery(['gallery.image', { id: dreamId }], {
@@ -87,11 +87,7 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row lg:h-full justify-center align-center">
-      <div
-        className="flex-auto bg-base-200 justify-center align-center rounded rounded-xl p-4"
-        onMouseOver={() => setShowActions(true)}
-        onMouseOut={() => setShowActions(false)}
-      >
+      <div className="flex-auto bg-base-200 justify-center align-center rounded rounded-xl p-4">
         <section id={`dream-${image.id}`} className="h-full hidden lg:flex">
           <figure className="w-full max-h-full relative">
             <Image
@@ -104,6 +100,23 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
               objectFit="contain"
             />
           </figure>
+
+          <div className="relative flex flex-col top-4 right-4 gap-2">
+            <ControlLink href={`/gallery/${image.id}`} tooltip="View full size">
+              <Image unoptimized src="/icons/link.svg" width={20} height={20} alt="Direct Link" layout="fixed" />
+            </ControlLink>
+
+            <ControlLink href={image.url} tooltip="Open in a new Window">
+              <Image
+                unoptimized
+                src="/icons/external-link.svg"
+                width={20}
+                height={20}
+                alt="Open in a new Window"
+                layout="fixed"
+              />
+            </ControlLink>
+          </div>
         </section>
 
         <section id={`dream-${image.id}`} className="flex lg:hidden">
@@ -118,33 +131,6 @@ const DreamPreview: React.FC<DreamPreviewProps> = ({ dreamId }) => {
             />
           </figure>
         </section>
-
-        {showActions && (
-          <div
-            className="block w-24 m-auto mb-4 relative bg-white text-center opacity-40 hover:opacity-100 rounded rounded-lg px-4 py-2 text-xs flex gap-5 justify-center"
-            style={{ top: -50 }}
-          >
-            <a href={`/gallery/${image.id}`} className="opacity-50 hover:opacity-100 transition">
-              <Image unoptimized src="/icons/link-black.svg" width={20} height={20} alt="Direct Link" layout="fixed" />
-            </a>
-
-            <a
-              href={image.url || '#'}
-              target="_blank"
-              rel="noreferrer"
-              className="opacity-50 hover:opacity-100 transition"
-            >
-              <Image
-                unoptimized
-                src="/icons/maximize-2-black.svg"
-                width={20}
-                height={20}
-                alt="Open in a new Window"
-                layout="fixed"
-              />
-            </a>
-          </div>
-        )}
       </div>
 
       <section className="lg:w-96 lg:pl-4 flex flex-col">
