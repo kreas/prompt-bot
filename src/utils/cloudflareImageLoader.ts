@@ -1,6 +1,4 @@
 export const cloudflareLoader = ({ src, width, quality }: { src: string, width: number, quality?: number }) => {
-  if (process.env.NODE_ENV !== 'production') return src
-
   const params = [`width=${width}`, 'format=auto']
 
   if (quality) {
